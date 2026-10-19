@@ -1,0 +1,13 @@
+[
+  {
+    "version": "development",
+    "title": "development",
+    "aliases": [
+      "latest"
+    ],
+    "properties": {
+      "commit": "78c07add51f5f28b218ea07547e3c7e3dcf29557",
+      "date": "2026-10-19T14:26:07-07:00"
+    }
+  }
+]
