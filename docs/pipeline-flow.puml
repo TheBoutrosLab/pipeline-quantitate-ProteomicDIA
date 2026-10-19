@@ -1,14 +1,12 @@
-/'
-This is a PlantUML (https://plantuml.com/) diagram documenting the pipeline.
-
-Everything between the opening slash-single-quote and the closing
-single-quote-slash is a comment.
-'/
-
 @startuml
-title Pipeline Steps
-
-:Step 1;
-:Step 2;
-
+left to right direction
+rectangle "EasyPQP cohort library TSV" as library
+rectangle "One DIA mzML per sample" as samples
+rectangle "Validate library and sample manifest" as validate
+rectangle "DIA-NN cohort quantification" as diann
+rectangle "Report, matrices, QC, checksums" as results
+library --> validate
+samples --> validate
+validate --> diann
+diann --> results
 @enduml

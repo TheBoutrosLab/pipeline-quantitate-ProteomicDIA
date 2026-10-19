@@ -1,0 +1,13 @@
+global:
+  temp_dir: work
+  nf_config: test/global.config
+  remove_temp: false
+  clean_logs: true
+
+cases:
+  - name: test-integration-DIANN
+    message: Quantify one DIA cohort against an EasyPQP library
+    nf_script: main.nf
+    nf_config: test/test-integration-DIANN/test.config
+    skip: true
+    verbose: true
