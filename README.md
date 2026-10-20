@@ -1,162 +1,49 @@
-# Pipeline Name
+# Quantitate Proteomic DIA
 
-[![Prepare release](https://img.shields.io/badge/Action-Create%20New%20Release-blue)](https://github.com/theboutroslab/template-NextflowPipeline/actions/workflows/prepare-release.yaml)
+This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML runs with DIA-NN from the `fcyucn/fragpipe:24.0` image. It uses the cohort EasyPQP TSV produced by `pipeline-generate-ProteomicSpectralLibrary`, downstream of MSFragger search and PSM validation. The library is supplied unchanged; DIA-NN retains its protein groups with `--no-prot-inf`. One DIA-NN invocation processes every sample in the cohort so cross-run quantities and matrices are calculated together.
 
-- [Pipeline Name](#pipeline-name)
-  - [Overview](#overview)
-  - [How To Run](#how-to-run)
-  - [Flow Diagram](#flow-diagram)
-  - [Pipeline Steps](#pipeline-steps)
-    - [1. Step/Process 1](#1-stepprocess-1)
-    - [2. Step/Process 2](#2-stepprocess-2)
-    - [3. Step/Process n](#3-stepprocess-n)
-  - [Inputs](#inputs)
-  - [Outputs](#outputs)
-  - [Testing and Validation](#testing-and-validation)
-    - [Test Data Set](#test-data-set)
-    - [Validation <version number\>](#validation-version-number)
-    - [Validation Tool](#validation-tool)
-  - [References](#references)
-  - [Discussions](#discussions)
-  - [Contributors](#contributors)
-  - [License](#license)
-## Overview
+## How to run
 
-A 3-4 sentence summary of the pipeline, including the pipeline's purpose, the type of expected scientific inputs/outputs of the pipeline (e.g: FASTQs and BAMs), and a list of tools/steps in the pipeline.
+Initialize Git submodules with `git submodule update --init --recursive`. Copy `config/template.config` to a run-specific config and set `dataset_id`, `input_csv`, `library_tsv`, and `output_dir`. Run with the Boutros Lab Nextflow submission tool or `nextflow run . -c your.config -profile docker`.
 
----
+The CSV has exactly `sample_name,mzML` columns, one mzML per biological sample. Relative mzML paths resolve from the CSV directory. Sample names and mzML filenames must be unique. mzML filenames may contain letters, numbers, dots, underscores, and hyphens. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.
 
-## How To Run
-
-1. Update the params section of the .config file
-
-2. Update the input yaml
-
-3. See the submission script, [here](https://github.com/theboutroslab/tool-submit-nf), to submit your pipeline
-
----
-
-## Flow Diagram
-
-A directed acyclic graph of your pipeline. The [PlantUML](https://plantuml.com/) code defining this diagram is version-controlled in the [docs/](./docs/) folder, and a [GitHub Action](https://github.com/theboutroslab/tool-PlantUML-action) automatically regenerates the SVG image when that file is changed.
-
-![Pipeline Graph](./docs/pipeline-flow.svg)
-
----
-
-## Pipeline Steps
-
-### 1. Step/Process 1
-
-> A 2-3 sentence description of each step/proccess in your pipeline that includes the purpose of the step/process, the tool(s) being used and their version, and the expected scientific inputs/outputs (e.g: FASTQs and BAMs) of the pipeline.
-
-### 2. Step/Process 2
-
-> A 2-3 sentence description of each step/proccess in your pipeline that includes the purpose of the step/process, the tool(s) being used and their version, and the expected scientific inputs/outputs (e.g: FASTQs and BAMs) of the pipeline.
-
-### 3. Step/Process n
-
-> A 2-3 sentence description of each step/proccess in your pipeline that includes the purpose of the step/process, the tool(s) being used and their version, and the expected scientific inputs/outputs (e.g: FASTQs and BAMs) of the pipeline.
-
----
-
-## Inputs
-
-### Input YAML
-
-> include an example of the organization structure within the YAML. Example:
-```yaml
-input 1: 'patient_id'
-input:
-    normal:
-      - id: <normal id>
-        BAM: </path/to/normal.bam>
-    tumor:
-      - id: <tumor id>
-        BAM: </path/to/tumor.bam>
+```csv
+sample_name,mzML
+sample_01,/data/sample_01.mzML
+sample_02,/data/sample_02.mzML
 ```
 
-### Config
+## Parameters
 
-| Field | Type | Required | Description |
-| ----- | ---- | ------------ | ------------------------ |
-| param 1 | _type_ | yes/no | 1-2 sentence description of the parameter, including any defaults if any. |
-| param 2 | _type_ | yes/no | 1-2 sentence description of the parameter, including any defaults if any. |
-| param n | _type_ | yes/no | 1-2 sentence description of the parameter, including any defaults if any. |
-| `work_dir` | path | no | Path of working directory for Nextflow. When included in the sample config file, Nextflow intermediate files and logs will be saved to this directory. With ucla_cds, the default is `/scratch` and should only be changed for testing/development. Changing this directory to `/hot` or `/tmp` can lead to high server latency and potential disk space limitations, respectively. |
-
-> Include the optional param `work_dir` in the inputs accompanied by a warning of the potentials dangers of using the param. Update the warning if necessary.
-
----
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `dataset_id` | Yes | Cohort identifier and output name. |
+| `input_csv` | Yes | Sample to mzML mapping. |
+| `library_tsv` | Yes | Nonempty EasyPQP cohort library TSV. |
+| `output_dir` | Yes | Output root. |
+| `diann_qvalue` | No | Main report precursor q-value cutoff, default 0.01. |
+| `diann_matrix_qvalue` | No | Matrix q-value cutoff, default 0.01. |
+| `diann_fragment_interference_removal` | No | Remove interference from fragment elution curves when `true`; default `false` matches FragPipe (`--no-ifs-removal`). |
+| `docker_image_fragpipe` | No | DIA-NN image, default `fcyucn/fragpipe:24.0`. |
+| `work_dir` | No | Nextflow work directory. Prefer scratch space; large mzML and DIA-NN temporary files can consume substantial storage. |
 
 ## Outputs
 
-<!-- List and describe the final output(s) of the pipeline. -->
+Results are published directly under `quantitate-ProteomicDIA-1.0.0/<dataset_id>/output/DIA-NN/`: all DIA-NN files beginning with `<dataset_id>-report`, plus `diann.log` and `output.sha512`. The checksum file covers those published DIA-NN reports and `diann.log`. The generated input list, sample manifest, and library checksum stay in the Nextflow work directory. Nextflow logs and the effective parameter record are published under a timestamped `log-*` directory.
 
-| Output | Description |
-| ------------ | ------------------------ |
-| ouput 1 | 1 - 2 sentence description of the output. |
-| ouput 2 | 1 - 2 sentence description of the output. |
-| ouput n | 1 - 2 sentence description of the output. |
+The main report is filtered at `diann_qvalue`. Matrices use `diann_matrix_qvalue`, so matrix counts need not equal main report counts. The DIA-NN command also follows FragPipe with `--smart-profiling`, `--no-quant-files`, `--peak-center`, and `--report-lib-info`. Fragment interference removal is disabled by default to match FragPipe and can be enabled with `diann_fragment_interference_removal = true`. The pipeline records staged mzML paths in a work-directory `filelist_diann.txt` and passes the file with FragPipe’s working `--cfg filelist_diann.txt--` syntax as the final DIA-NN option. This keeps the command length constant for large cohorts. The bundled DIA-NN version may print `WARNING: unrecognised option [--]` while still loading the runs. The library's protein groups are preserved; this pipeline does not perform fresh protein inference or merge fraction quantities.
 
----
+## Testing
 
-## Testing and Validation
-
-### Test Data Set
-
-A 2-3 sentence description of the test data set(s) used to validate and test this pipeline. If possible, include references and links for how to access and use the test dataset
-
-### Validation <version number\>
-
-| Input/Output | Description | Result |
-| ------------ | ------------------------ | ------------------------ |
-| metric 1 | 1 - 2 sentence description of the metric | quantifiable result |
-| metric 2 | 1 - 2 sentence description of the metric | quantifiable result |
-| metric n | 1 - 2 sentence description of the metric | quantifiable result |
-
-- [Reference/External Link/Path 1 to any files/plots or other validation results](<link>)
-- [Reference/External Link/Path 2 to any files/plots or other validation results](<link>)
-- [Reference/External Link/Path n to any files/plots or other validation results](<link>)
-
-### Validation Tool
-
-Included is a template for validating your input files. For more information on the tool check out: https://github.com/theboutroslab/package-PipeVal
-
----
+An intentionally skipped nf-test integration scaffold is provided in `test/`. See `test/README.md`. No local tests were run for this initial implementation.
 
 ## References
 
-1. [Reference 1](<links-to-papers/external-code/documentation/metadata/other-repos/or-anything-else>)
-2. [Reference 2](<links-to-papers/external-code/documentation/metadata/other-repos/or-anything-else>)
-3. [Reference n](<links-to-papers/external-code/documentation/metadata/other-repos/or-anything-else>)
-
----
-
-## Discussions
-
-- [Issue tracker](<link-to-repo-issues-page>) to report errors and enhancement ideas.
-- Discussions can take place in [<pipeline> Discussions](<link-to-repo-discussions-page>)
-- [<pipeline> pull requests](<link-to-repo-pull-requests>) are also open for discussion
-
----
-
-## Contributors
-
-> Update link to repo-specific URL for GitHub Insights Contributors page.
-
-Please see list of [Contributors](https://github.com/theboutroslab/template-NextflowPipeline/graphs/contributors) at GitHub.
-
----
+- [DIA-NN command-line reference](https://github.com/vdemichev/DiaNN#command-line-reference)
+- [FragPipe DIA workflow](https://fragpipe.nesvilab.org/docs/tutorial_DIA.html)
+- [EasyPQP](https://github.com/grosenberger/easypqp)
 
 ## License
 
-[pipeline name] is licensed under the GNU General Public License version 2. See the file LICENSE for the terms of the GNU GPL license.
-
-<one line to give the program's name and a brief idea of what it does.>
-
-Copyright (C) 2026 Sanford Burnham Prebys Medical Discovery Institute ("Boutros Lab")
-
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Licensed under GNU GPL version 2; see `LICENSE`.

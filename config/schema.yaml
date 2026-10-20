@@ -2,73 +2,68 @@
 dataset_id:
   type: 'String'
   required: true
-  help: 'Dataset identifier'
-patient_id:
-  type: 'String'
+  help: 'Cohort identifier used for output naming'
+input_csv:
+  type: 'Path'
+  mode: 'r'
   required: true
-  help: 'Patient identifier'
-sample_id:
-  type: 'String'
+  help: 'CSV with exactly sample_name,mzML columns; one unfractionated DIA mzML per sample'
+library_tsv:
+  type: 'Path'
+  mode: 'r'
   required: true
-  help: 'Sample identifier'
-param_name:
-  type: 'String'
-  required: false
-  default: 'foo-bar'
-  help: 'Example pipeline parameter; replace with pipeline-specific parameters'
+  help: 'Cohort spectral library TSV from pipeline-generate-ProteomicSpectralLibrary'
 output_dir:
   type: 'Path'
   mode: 'w'
   required: true
-  help: 'Absolute path to output directory'
+  help: 'Root output directory'
+diann_qvalue:
+  type: 'Number'
+  default: 0.01
+  help: 'Precursor q-value cutoff for DIA-NN main report; default 0.01'
+diann_matrix_qvalue:
+  type: 'Number'
+  default: 0.01
+  help: 'Matrix q-value cutoff for DIA-NN; default 0.01'
+diann_fragment_interference_removal:
+  type: Bool
+  default: false
+  help: 'Enable DIA-NN removal of interference from fragment elution curves; default false matches FragPipe'
+docker_image_fragpipe:
+  type: 'String'
+  required: false
+  help: 'Container with DIA-NN; default fcyucn/fragpipe:24.0'
+work_dir:
+  type: 'Path'
+  mode: 'w'
+  required: false
+  help: 'Nextflow working directory; use scratch space for large DIA datasets'
 apptainer_library:
   type: 'Path'
   mode: 'r'
   required: false
-  help: 'Absolute path to Apptainer library directory'
+  help: 'Apptainer library directory'
 apptainer_cache:
   type: 'Path'
   mode: 'w'
   required: false
-  help: 'Absolute path to Apptainer cache directory'
-singularity_library:
-  type: 'Path'
-  mode: 'r'
-  required: false
-  help: 'Absolute path to Singularity library directory'
-singularity_cache:
-  type: 'Path'
-  mode: 'w'
-  required: false
-  help: 'Absolute path to Singularity cache directory'
+  help: 'Apptainer cache directory'
 base_resource_update:
   type: 'ResourceUpdateNamespace'
   required: false
-  help: 'User-defined modifications for adjusting base resource allocations for processes'
+  help: 'User-defined process memory and CPU adjustments'
   elements:
     memory:
       type: 'ResourceUpdateList'
       required: false
-      help: 'List of memory updates'
+      help: 'Memory adjustments'
     cpus:
       type: 'ResourceUpdateList'
       required: false
-      help: 'List of CPU updates'
-input:
-  type: 'InputNamespace'
-  required: true
-  help: 'Input samples'
-  elements:
-    BAM:
-      type: 'InputBAMNamespace'
-      required: true
-      help: 'Input BAM samples grouped by sample type'
-      elements:
-        normal:
-          type: 'BAMEntryList'
-          required: false
-          help: 'Input normal sample'
-        tumor:
-          type: 'BAMEntryList'
-          required: false
-          help: 'Input tumor sample'
+      help: 'CPU adjustments'
+resource_allocation_profile_tag:
+  type: 'String'
+  choices: ['default']
+  default: 'default'
+  help: 'Process-specific resource allocation profile'

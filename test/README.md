@@ -1,12 +1,5 @@
-# Pipeline Test Files
+# DIA-NN nf-test scaffold
 
-The test files in this directory were generated synthetically from a tiny SAM file:
+The integration case is intentionally empty and skipped. No test data or assertions are bundled. To enable it, copy `.env-template` to `.env`, set `TEST_DATA_DIR`, replace the paths in `test/test-integration-DIANN/input.csv` and `test/test-integration-DIANN/test.config`, add assertions, and change `skip` to `false` in `nftest.yml`.
 
-```
-@HD	VN:1.0	SO:unsorted
-@SQ	SN:chr1	LN:1000
-@RG	ID:sample1	SM:PatientY	LB:lib1	PL:ILLUMINA
-read1	0	chr1	100	60	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF
-```
-
-FIXME: These files should be removed from any pipelines generated from this template.
+Inside a Slurm job, run `bash test/run-nftest.sh test-integration-DIANN`. The runner writes outputs and work files under `/scratch/$SLURM_JOB_ID/test-integration-DIANN`.
