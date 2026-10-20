@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>How To Run - pipeline-quantitate-ProteomicDIA</title>
+    <title>How to run - pipeline-quantitate-ProteomicDIA</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "How To Run";
+        var mkdocs_page_name = "How to run";
         var mkdocs_page_input_path = "how-to-run.md";
         var mkdocs_page_url = null;
       </script>
@@ -40,26 +40,14 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
-              </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">How To Run</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">How to run</a>
     <ul class="current">
     </ul>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../flow-diagram/">Flow Diagram</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../pipeline-steps/">Pipeline Steps</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../inputs/">Inputs</a>
+                <li class="toctree-l1"><a class="reference internal" href="../parameters/">Parameters</a>
                 </li>
               </ul>
               <ul>
@@ -67,19 +55,11 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../testing-and-validation/">Testing and Validation</a>
+                <li class="toctree-l1"><a class="reference internal" href="../testing/">Testing</a>
                 </li>
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../references/">References</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../discussions/">Discussions</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../contributors/">Contributors</a>
                 </li>
               </ul>
               <ul>
@@ -100,9 +80,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">How To Run</li>
+      <li class="breadcrumb-item active">How to run</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/78c07add51f5f28b218ea07547e3c7e3dcf29557/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/39c819e968c9d123d4e5074e244dd8c4b6794cda/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -110,25 +90,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="how-to-run">How To Run</h2>
-<ol>
-<li>
-<p>Update the params section of the .config file</p>
-</li>
-<li>
-<p>Update the input yaml</p>
-</li>
-<li>
-<p>See the submission script, <a href="https://github.com/theboutroslab/tool-submit-nf">here</a>, to submit your pipeline</p>
-</li>
-</ol>
-<hr />
+                <h2 id="how-to-run">How to run</h2>
+<p>Initialize Git submodules with <code>git submodule update --init --recursive</code>. Copy <code>config/template.config</code> to a run-specific config and set <code>dataset_id</code>, <code>input_csv</code>, <code>library_tsv</code>, and <code>output_dir</code>. Run with the Boutros Lab Nextflow submission tool or <code>nextflow run . -c your.config -profile docker</code>.</p>
+<p>The CSV has exactly <code>sample_name,mzML</code> columns, one mzML per biological sample. Relative mzML paths resolve from the CSV directory. Sample names and mzML filenames must be unique. mzML filenames may contain letters, numbers, dots, underscores, and hyphens. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.</p>
+<pre><code class="language-csv">sample_name,mzML
+sample_01,/data/sample_01.mzML
+sample_02,/data/sample_02.mzML
+</code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../overview/" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../flow-diagram/" class="btn btn-neutral float-right" title="Flow Diagram">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../parameters/" class="btn btn-neutral float-right" title="Parameters">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -155,10 +129,10 @@
         </span>
     
     
-      <span><a href="../overview/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../flow-diagram/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../parameters/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
