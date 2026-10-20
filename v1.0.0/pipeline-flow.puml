@@ -1,0 +1,12 @@
+@startuml
+left to right direction
+rectangle "EasyPQP cohort library TSV" as library
+rectangle "One DIA mzML per sample" as samples
+rectangle "Validate library and sample manifest" as validate
+rectangle "DIA-NN cohort quantification" as diann
+rectangle "Report, matrices, QC, checksums" as results
+library --> validate
+samples --> validate
+validate --> diann
+diann --> results
+@enduml
