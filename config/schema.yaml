@@ -26,6 +26,10 @@ diann_matrix_qvalue:
   type: 'Number'
   default: 0.01
   help: 'Matrix q-value cutoff for DIA-NN; default 0.01'
+diann_fragment_interference_removal:
+  type: Bool
+  default: false
+  help: 'Enable DIA-NN removal of interference from fragment elution curves; default false matches FragPipe'
 docker_image_fragpipe:
   type: 'String'
   required: false
