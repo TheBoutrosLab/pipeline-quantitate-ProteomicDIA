@@ -59,8 +59,4 @@ log.info """\
 
 workflow {
     quantitate_DIANN(readSamples(params.input_csv))
-
-    workflow.onComplete = {
-        WorkflowFinalizer.completeWorkflow(workflow, params)
-    }
 }
