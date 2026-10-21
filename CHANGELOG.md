@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Keep process logs as individual files after successful runs (fixes #2).
+
 ## 1.0.0
 
 - Add cohort-wide DIA-NN quantification from an EasyPQP spectral library and one mzML per sample.
