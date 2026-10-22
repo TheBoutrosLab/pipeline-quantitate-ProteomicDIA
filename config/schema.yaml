@@ -8,28 +8,25 @@ input_csv:
   mode: 'r'
   required: true
   help: 'CSV with exactly sample_name,mzML columns; one unfractionated DIA mzML per sample'
-library_tsv:
+library:
   type: 'Path'
   mode: 'r'
   required: true
-  help: 'Cohort spectral library TSV from pipeline-generate-ProteomicSpectralLibrary'
+  help: 'EasyPQP cohort library .tsv or DIA-NN .speclib; a .predicted.speclib requires FASTA'
+fasta:
+  type: 'Path'
+  mode: 'r'
+  required: false
+  help: 'Source protein FASTA; required for .predicted.speclib'
 output_dir:
   type: 'Path'
   mode: 'w'
   required: true
   help: 'Root output directory'
-diann_qvalue:
-  type: 'Number'
-  default: 0.01
-  help: 'Precursor q-value cutoff for DIA-NN main report; default 0.01'
-diann_matrix_qvalue:
-  type: 'Number'
-  default: 0.01
-  help: 'Matrix q-value cutoff for DIA-NN; default 0.01'
-diann_fragment_interference_removal:
-  type: Bool
-  default: false
-  help: 'Enable DIA-NN removal of interference from fragment elution curves; default false matches FragPipe'
+'DIA-NN':
+  type: Namespace
+  required: true
+  help: 'DIA-NN command options; snake_case keys map directly to --kebab-case flags'
 docker_image_fragpipe:
   type: 'String'
   required: false

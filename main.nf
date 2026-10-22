@@ -41,17 +41,20 @@ def readSamples(String inputCsv) {
             }
             [sampleName: sampleName, mzml: mzml]
         }.sort { it.sampleName }
-        tuple(params.dataset_id, file(params.library_tsv), ordered*.sampleName, ordered*.mzml)
+        def fastaPath = params.get('fasta')
+        def references = [file(params.library)] + (fastaPath ? [file(fastaPath)] : [])
+        tuple(params.dataset_id, references, ordered*.sampleName, ordered*.mzml)
     }
 }
 
 log.info """\
-        ===========================================
+        ===============================================
         Q U A N T I T A T E   P R O T E O M I C   D I A
-        ===========================================
+        ===============================================
         Boutros Lab
         Pipeline: ${workflow.manifest.name} ${workflow.manifest.version}
-        Library: ${params.library_tsv}
+        Library: ${params.library}
+        FASTA: ${params.get('fasta') ?: 'none'}
         Samples: ${params.input_csv}
         Output: ${params.output_dir_base}
         DIA-NN image: ${params.docker_image_fragpipe}
