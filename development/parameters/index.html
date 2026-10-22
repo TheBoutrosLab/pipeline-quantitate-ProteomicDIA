@@ -82,7 +82,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Parameters</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/98bc6e0884e0f44ae8ba2f58f8943c720f49a0c2/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/7ccee12c3311608a482a16f5b2e79ef806b56a9a/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -111,9 +111,14 @@
 <td>Sample to mzML mapping.</td>
 </tr>
 <tr>
-<td><code>library_tsv</code></td>
+<td><code>library</code></td>
 <td>Yes</td>
-<td>Nonempty EasyPQP cohort library TSV.</td>
+<td>Nonempty EasyPQP <code>.tsv</code> or DIA-NN <code>.speclib</code>.</td>
+</tr>
+<tr>
+<td><code>fasta</code></td>
+<td>For predicted libraries</td>
+<td>Matching source FASTA; also required if reannotating.</td>
 </tr>
 <tr>
 <td><code>output_dir</code></td>
@@ -121,19 +126,9 @@
 <td>Output root.</td>
 </tr>
 <tr>
-<td><code>diann_qvalue</code></td>
+<td><code>params { 'DIA-NN' { ... } }</code></td>
 <td>No</td>
-<td>Main report precursor q-value cutoff, default 0.01.</td>
-</tr>
-<tr>
-<td><code>diann_matrix_qvalue</code></td>
-<td>No</td>
-<td>Matrix q-value cutoff, default 0.01.</td>
-</tr>
-<tr>
-<td><code>diann_fragment_interference_removal</code></td>
-<td>No</td>
-<td>Remove interference from fragment elution curves when <code>true</code>; default <code>false</code> matches FragPipe (<code>--no-ifs-removal</code>).</td>
+<td>DIA-NN option namespace; each snake_case key maps directly to a <code>--kebab-case</code> flag.</td>
 </tr>
 <tr>
 <td><code>docker_image_fragpipe</code></td>

@@ -82,7 +82,7 @@
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/98bc6e0884e0f44ae8ba2f58f8943c720f49a0c2/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/7ccee12c3311608a482a16f5b2e79ef806b56a9a/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -91,7 +91,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="quantitate-proteomic-dia">Quantitate Proteomic DIA</h1>
-<p>This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML runs with DIA-NN from the <code>fcyucn/fragpipe:24.0</code> image. It uses the cohort EasyPQP TSV produced by <code>pipeline-generate-ProteomicSpectralLibrary</code>, downstream of MSFragger search and PSM validation. The library is supplied unchanged; DIA-NN retains its protein groups with <code>--no-prot-inf</code>. One DIA-NN invocation processes every sample in the cohort so cross-run quantities and matrices are calculated together.</p>
+<p>This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML runs with DIA-NN from the <code>fcyucn/fragpipe:24.0</code> image. It accepts either a cohort EasyPQP TSV from <code>pipeline-generate-ProteomicSpectralLibrary</code> or a DIA-NN <code>.speclib</code>, including a FASTA-predicted <code>.predicted.speclib</code>. One DIA-NN invocation processes all samples so cross-run quantities and matrices are calculated together.</p>
               
             </div>
           </div><footer>
@@ -144,5 +144,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2026-10-21 17:16:34.958239+00:00
+Build Date UTC : 2026-10-22 16:34:50.525141+00:00
 -->

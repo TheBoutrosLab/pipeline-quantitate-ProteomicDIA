@@ -82,7 +82,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">How to run</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/98bc6e0884e0f44ae8ba2f58f8943c720f49a0c2/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/7ccee12c3311608a482a16f5b2e79ef806b56a9a/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -91,7 +91,17 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="how-to-run">How to run</h2>
-<p>Initialize Git submodules with <code>git submodule update --init --recursive</code>. Copy <code>config/template.config</code> to a run-specific config and set <code>dataset_id</code>, <code>input_csv</code>, <code>library_tsv</code>, and <code>output_dir</code>. Run with the Boutros Lab Nextflow submission tool or <code>nextflow run . -c your.config -profile docker</code>.</p>
+<p>Initialize Git submodules with <code>git submodule update --init --recursive</code>. Copy <code>config/template.config</code> to a run-specific config and set <code>dataset_id</code>, <code>input_csv</code>, <code>library</code>, and <code>output_dir</code>. Run with the Boutros Lab Nextflow submission tool or <code>nextflow run . -c your.config -profile docker</code>.</p>
+<p>Set <code>library</code> to an EasyPQP <code>.tsv</code> or DIA-NN <code>.speclib</code>. For an EasyPQP TSV, protein inference defaults to off (<code>--no-prot-inf</code>), retaining the library's protein groups. A <code>.predicted.speclib</code> requires the matching source <code>fasta</code>; protein inference defaults to on. For other <code>.speclib</code> libraries, FASTA is optional and protein inference also defaults to on. Set <code>no_prot_inf</code> in the <code>'DIA-NN'</code> namespace to override either default. The pipeline warns when <code>--no-prot-inf</code> is enabled for a predicted library, or when a TSV is supplied with FASTA or without <code>--no-prot-inf</code>. Setting <code>reannotate = true</code> requires FASTA and replaces protein annotations based on its sequences. Use the same sample CSV with either library to compare searches, but choose distinct <code>dataset_id</code> values or output roots so results do not overwrite each other.</p>
+<pre><code class="language-groovy">// Predicted library example
+params {
+    dataset_id = 'cohort-predicted'
+    input_csv = '/data/samples.csv'
+    library = '/data/cohort.predicted.speclib'
+    fasta = '/data/source-proteins.fasta'
+    output_dir = '/data/results'
+}
+</code></pre>
 <p>The CSV has exactly <code>sample_name,mzML</code> columns, one mzML per biological sample. Relative mzML paths resolve from the CSV directory. Sample names and mzML filenames must be unique. mzML filenames may contain letters, numbers, dots, underscores, and hyphens. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.</p>
 <pre><code class="language-csv">sample_name,mzML
 sample_01,/data/sample_01.mzML
