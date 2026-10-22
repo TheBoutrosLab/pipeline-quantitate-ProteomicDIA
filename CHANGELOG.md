@@ -5,7 +5,9 @@ All notable changes to `pipeline-quantitate-ProteomicDIA` are documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2026-10-22
+## [Unreleased]
+
+## [1.1.0] - 2026-10-22
 
 ### Added
 
@@ -34,3 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Record staged mzML runs in `filelist_diann.txt` within the work directory.
 - Make DIA-NN fragment interference removal configurable, disabled by default to match FragPipe.
 - Publish only dataset-prefixed DIA-NN reports, `diann.log`, and `output.sha512` directly in the DIA-NN output directory.
+
+[1.0.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/releases/tag/v1.0.0
+[1.1.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.0.0...v1.1.0
+[unreleased]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.1.0...HEAD
