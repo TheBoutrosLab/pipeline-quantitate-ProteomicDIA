@@ -1,10 +1,23 @@
 # Quantitate Proteomic DIA
 
-This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML runs with DIA-NN from the `fcyucn/fragpipe:24.0` image. It uses the cohort EasyPQP TSV produced by `pipeline-generate-ProteomicSpectralLibrary`, downstream of MSFragger search and PSM validation. The library is supplied unchanged; DIA-NN retains its protein groups with `--no-prot-inf`. One DIA-NN invocation processes every sample in the cohort so cross-run quantities and matrices are calculated together.
+This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML runs with DIA-NN from the `fcyucn/fragpipe:24.0` image. It accepts either a cohort EasyPQP TSV from `pipeline-generate-ProteomicSpectralLibrary` or a DIA-NN `.speclib`, including a FASTA-predicted `.predicted.speclib`. One DIA-NN invocation processes all samples so cross-run quantities and matrices are calculated together.
 
 ## How to run
 
-Initialize Git submodules with `git submodule update --init --recursive`. Copy `config/template.config` to a run-specific config and set `dataset_id`, `input_csv`, `library_tsv`, and `output_dir`. Run with the Boutros Lab Nextflow submission tool or `nextflow run . -c your.config -profile docker`.
+Initialize Git submodules with `git submodule update --init --recursive`. Copy `config/template.config` to a run-specific config and set `dataset_id`, `input_csv`, `library`, and `output_dir`. Run with the Boutros Lab Nextflow submission tool or `nextflow run . -c your.config -profile docker`.
+
+Set `library` to an EasyPQP `.tsv` or DIA-NN `.speclib`. For an EasyPQP TSV, protein inference defaults to off (`--no-prot-inf`), retaining the library's protein groups. A `.predicted.speclib` requires the matching source `fasta`; protein inference defaults to on. For other `.speclib` libraries, FASTA is optional and protein inference also defaults to on. Set `no_prot_inf` in the `'DIA-NN'` namespace to override either default. The pipeline warns when `--no-prot-inf` is enabled for a predicted library, or when a TSV is supplied with FASTA or without `--no-prot-inf`. Setting `reannotate = true` requires FASTA and replaces protein annotations based on its sequences. Use the same sample CSV with either library to compare searches, but choose distinct `dataset_id` values or output roots so results do not overwrite each other.
+
+```groovy
+// Predicted library example
+params {
+    dataset_id = 'cohort-predicted'
+    input_csv = '/data/samples.csv'
+    library = '/data/cohort.predicted.speclib'
+    fasta = '/data/source-proteins.fasta'
+    output_dir = '/data/results'
+}
+```
 
 The CSV has exactly `sample_name,mzML` columns, one mzML per biological sample. Relative mzML paths resolve from the CSV directory. Sample names and mzML filenames must be unique. mzML filenames may contain letters, numbers, dots, underscores, and hyphens. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.
 
@@ -20,11 +33,10 @@ sample_02,/data/sample_02.mzML
 | --- | --- | --- |
 | `dataset_id` | Yes | Cohort identifier and output name. |
 | `input_csv` | Yes | Sample to mzML mapping. |
-| `library_tsv` | Yes | Nonempty EasyPQP cohort library TSV. |
+| `library` | Yes | Nonempty EasyPQP `.tsv` or DIA-NN `.speclib`. |
+| `fasta` | For predicted libraries | Matching source FASTA; also required if reannotating. |
 | `output_dir` | Yes | Output root. |
-| `diann_qvalue` | No | Main report precursor q-value cutoff, default 0.01. |
-| `diann_matrix_qvalue` | No | Matrix q-value cutoff, default 0.01. |
-| `diann_fragment_interference_removal` | No | Remove interference from fragment elution curves when `true`; default `false` matches FragPipe (`--no-ifs-removal`). |
+| `params { 'DIA-NN' { ... } }` | No | DIA-NN option namespace; each snake_case key maps directly to a `--kebab-case` flag. |
 | `docker_image_fragpipe` | No | DIA-NN image, default `fcyucn/fragpipe:24.0`. |
 | `work_dir` | No | Nextflow work directory. Prefer scratch space; large mzML and DIA-NN temporary files can consume substantial storage. |
 
@@ -32,11 +44,25 @@ sample_02,/data/sample_02.mzML
 
 Results are published directly under `quantitate-ProteomicDIA-1.0.0/<dataset_id>/output/DIA-NN/`: all DIA-NN files beginning with `<dataset_id>-report`, plus `diann.log` and `output.sha512`. The checksum file covers those published DIA-NN reports and `diann.log`. The generated input list, sample manifest, and library checksum stay in the Nextflow work directory. Nextflow logs and the effective parameter record are published under a timestamped `log-*` directory.
 
-The main report is filtered at `diann_qvalue`. Matrices use `diann_matrix_qvalue`, so matrix counts need not equal main report counts. The DIA-NN command also follows FragPipe with `--smart-profiling`, `--no-quant-files`, `--peak-center`, and `--report-lib-info`. Fragment interference removal is disabled by default to match FragPipe and can be enabled with `diann_fragment_interference_removal = true`. The pipeline records staged mzML paths in a work-directory `filelist_diann.txt` and passes the file with FragPipe’s working `--cfg filelist_diann.txt--` syntax as the final DIA-NN option. This keeps the command length constant for large cohorts. The bundled DIA-NN version may print `WARNING: unrecognised option [--]` while still loading the runs. The library's protein groups are preserved; this pipeline does not perform fresh protein inference or merge fraction quantities.
+The default `params { 'DIA-NN' { ... } }` namespace reproduces FragPipe's q-value thresholds, matrices, profiling, quantification, and report options. For the TSV library, `no_prot_inf` defaults to `true`; for a `.speclib`, it defaults to `false`. Override individual keys in the run config:
+
+```groovy
+params {
+    'DIA-NN' {
+        qvalue = 0.01          // --qvalue 0.01
+        no_prot_inf = false   // omit --no-prot-inf
+        no_ifs_removal = false // omit --no-ifs-removal
+        mass_acc = 10         // --mass-acc 10
+        pg_level = 1          // --pg-level 1
+    }
+}
+```
+
+A `true` Boolean emits a flag; `false` omits it. A string or number emits a flag with that value. A list repeats the flag for each value, such as `var_mod = ['UniMod:35,15.994915,M', 'UniMod:21,79.966331,STY']` inside the namespace. Pipeline-managed file and execution options (`lib`, `fasta`, `f`, `dir`, `out`, `threads`, `cfg`) cannot be set here. Version-specific options must be supported by the DIA-NN binary in the selected image, and file-valued options must refer to paths visible inside the container. The pipeline writes these options, the staged library and FASTA paths, and all mzML runs to the work-directory `diann-input/filelist_diann.txt`, then invokes DIA-NN with only `--cfg diann-input/filelist_diann.txt--`. The bundled version may print `WARNING: unrecognised option [--]` while still loading the runs. This pipeline does not merge fraction quantities.
 
 ## Testing
 
-An intentionally skipped nf-test integration scaffold is provided in `test/`. See `test/README.md`. No local tests were run for this initial implementation.
+An active predicted-library nf-test case and a skipped TSV scaffold are provided in `test/`. See `test/README.md`. Tests were not run locally for this change.
 
 ## References
 

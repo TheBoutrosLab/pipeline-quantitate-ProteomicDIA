@@ -1,11 +1,11 @@
-/** Quantify the complete cohort against one EasyPQP spectral library. */
+/** Quantify a cohort against one EasyPQP TSV or DIA-NN .speclib library. */
 process quantitate_DIANN {
     container params.docker_image_fragpipe
 
     publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy'
 
     input:
-        tuple val(dataset_id), path(library), val(sample_names), path(mzmls)
+        tuple val(dataset_id), path(references), val(sample_names), path(mzmls)
 
     output:
         path("${dataset_id}-report*"), emit: reports
@@ -13,7 +13,35 @@ process quantitate_DIANN {
         path('output.sha512'), emit: checksum
 
     script:
-        def interferenceRemovalOption = params.diann_fragment_interference_removal ? '' : '--no-ifs-removal'
+        def library = references[0]
+        def fasta = references.size() > 1 ? references[1] : null
+        // The DIA-NN executable receives a constant-length --cfg invocation.
+        def shellQuote = { value -> "'" + value.toString().replace("'", "'\"'\"'") + "'" }
+        def cfgValue = { value ->
+            def token = value.toString()
+            def needsQuote = token.contains(' ') || token.contains('\t') || token.contains('"') ||
+                             token.contains("'") || token.contains('\\')
+            needsQuote ? '"' + token.replace('\\', '\\\\').replace('"', '\\"') + '"' : token
+        }
+        def libraryName = params.library.toString().toLowerCase().endsWith('.speclib') ? 'library.speclib' : 'library.tsv'
+        def cfgRows = [
+            "--lib diann-input/${libraryName}",
+            "--out ${dataset_id}-report.tsv",
+            "--threads ${task.cpus}"
+        ]
+        if (fasta) cfgRows << '--fasta diann-input/source.fasta'
+        params['DIA-NN'].each { key, value ->
+            def flag = '--' + key.replace('_', '-')
+            def values = value instanceof List ? value : [value]
+            values.each { item ->
+                if (item instanceof Boolean) {
+                    if (item) cfgRows << flag
+                } else {
+                    cfgRows << "${flag} ${cfgValue(item)}"
+                }
+            }
+        }
+        def cfgCommands = cfgRows.collect { "printf '%s\\n' ${shellQuote(it)} >> diann-input/filelist_diann.txt" }.join('\n')
         def filelistRows = mzmls.collect {
             "printf '%s\\n' \"--f \$PWD/${it.name}\" >> diann-input/filelist_diann.txt"
         }.join('\n')
@@ -25,8 +53,12 @@ process quantitate_DIANN {
         mkdir -p diann-input
         printf 'sample_name\\tmzML\\n' > diann-input/samples.tsv
         ${manifestRows}
-        sha512sum '${library.name}' > diann-input/library.sha512
+        sha512sum ${shellQuote(library.name)} > diann-input/library.sha512
+        ${fasta ? "sha512sum ${shellQuote(fasta.name)} > diann-input/fasta.sha512" : ''}
+        ln -s ${shellQuote('../' + library.name)} diann-input/${libraryName}
+        ${fasta ? "ln -s ${shellQuote('../' + fasta.name)} diann-input/source.fasta" : ''}
         : > diann-input/filelist_diann.txt
+        ${cfgCommands}
         ${filelistRows}
         test -s diann-input/filelist_diann.txt
 
@@ -35,20 +67,7 @@ process quantitate_DIANN {
             echo 'DIA-NN executable was not found in the FragPipe image' >&2
             exit 1
         fi
-        "\$diann_bin" --lib '${library.name}' \\
-            --out '${dataset_id}-report.tsv' \\
-            --threads ${task.cpus} \\
-            --verbose 1 \\
-            --qvalue ${params.diann_qvalue} \\
-            --matrix-qvalue ${params.diann_matrix_qvalue} \\
-            --matrices \\
-            --no-prot-inf \\
-            --smart-profiling \\
-            --no-quant-files \\
-            --peak-center \\
-            ${interferenceRemovalOption} \\
-            --report-lib-info \\
-            --cfg diann-input/filelist_diann.txt-- > diann.log 2>&1 || {
+        "\$diann_bin" --cfg diann-input/filelist_diann.txt-- > diann.log 2>&1 || {
                 cat diann.log >&2
                 exit 1
             }

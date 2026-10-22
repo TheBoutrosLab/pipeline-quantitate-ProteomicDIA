@@ -11,3 +11,8 @@ cases:
     nf_config: test/test-integration-DIANN/test.config
     skip: true
     verbose: true
+  - name: test-integration-DIANN-predicted
+    message: Quantify one DIA cohort against a predicted .speclib library
+    nf_script: main.nf
+    nf_config: test/test-integration-DIANN-predicted/test.config
+    verbose: true
