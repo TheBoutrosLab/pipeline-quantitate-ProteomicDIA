@@ -82,7 +82,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Outputs</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/dcc461e1c672b0799f57439cf2b03af0ab8b966e/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/a4d94c91d2bddafb1a2d9cf0a535bf92e501d9ae/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -91,7 +91,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="outputs">Outputs</h2>
-<p>Results are published directly under <code>quantitate-ProteomicDIA-1.0.0/&lt;dataset_id&gt;/output/DIA-NN/</code>: all DIA-NN files beginning with <code>&lt;dataset_id&gt;-report</code>, plus <code>diann.log</code>, <code>output.sha512</code>, and a <code>&lt;dataset_id&gt;-samples.tsv</code> manifest mapping sample names to staged acquisitions. The checksum file covers the published reports, manifest, and <code>diann.log</code>. The generated input list and library checksum stay in the Nextflow work directory. Nextflow logs and the effective parameter record are published under a timestamped <code>log-*</code> directory.</p>
+<p>Results are published directly under <code>quantitate-ProteomicDIA-1.0.0/&lt;dataset_id&gt;/output/DIA-NN/</code>: all DIA-NN files beginning with <code>&lt;dataset_id&gt;-report</code>, plus <code>diann.log</code>, <code>output.sha512</code>, and a <code>&lt;dataset_id&gt;-samples.tsv</code> manifest mapping sample names to staged acquisitions. The checksum file covers the published reports, manifest, and <code>diann.log</code>. The generated input list and prepared-library checksum stay in the DIA-NN work directory; the prepared TSV stays in the library-preparation work directory. Nextflow logs and the effective parameter record are published under a timestamped <code>log-*</code> directory.</p>
 <p>The default <code>params { 'DIA-NN' { ... } }</code> namespace reproduces FragPipe's q-value thresholds, matrices, profiling, quantification, and report options. For the TSV library, <code>no_prot_inf</code> defaults to <code>true</code>; for a <code>.speclib</code>, it defaults to <code>false</code>. Override individual keys in the run config:</p>
 <pre><code class="language-groovy">params {
     'DIA-NN' {
