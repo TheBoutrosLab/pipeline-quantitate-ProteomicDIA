@@ -3,6 +3,7 @@
 nextflow.enable.dsl = 2
 
 include { quantitate_DIANN } from './module/quantitate_DIANN.nf'
+include { prepare_EasyPQPLibrary } from './module/prepare_EasyPQPLibrary.nf'
 
 /** One unfractionated DIA acquisition per biological sample. */
 def readSamples(String inputCsv) {
@@ -62,5 +63,15 @@ log.info """\
         """.stripIndent()
 
 workflow {
-    quantitate_DIANN(readSamples(params.input_csv))
+    def samples = readSamples(params.input_csv)
+    if (params.library.toString().toLowerCase().endsWith('.tsv')) {
+        prepare_EasyPQPLibrary(Channel.value(tuple(
+            params.dataset_id, file(params.library)
+        )))
+        samples = samples.join(prepare_EasyPQPLibrary.out.prepared)
+            .map { dataset_id, references, sample_names, acquisitions, prepared_library ->
+                tuple(dataset_id, [prepared_library] + references.drop(1), sample_names, acquisitions)
+            }
+    }
+    quantitate_DIANN(samples)
 }

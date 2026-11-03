@@ -26,6 +26,9 @@ process quantitate_DIANN {
             needsQuote ? '"' + token.replace('\\', '\\\\').replace('"', '\\"') + '"' : token
         }
         def libraryName = params.library.toString().toLowerCase().endsWith('.speclib') ? 'library.speclib' : 'library.tsv'
+        def libraryPreparation = "ln -s ${shellQuote('../' + library.name)} diann-input/${libraryName}"
+        def fragmentAnnotationCheck = libraryName == 'library.tsv' ?
+            "if grep -Eqi 'no fragment charge information found|fragment charge 0 specified|fragments with invalid/unspecified charges|no fragment type information found|no neutral loss information found' diann.log; then echo 'DIA-NN did not recognise fragment type, charge, or loss in the prepared library' >&2; exit 1; fi" : ''
         def cfgRows = [
             "--lib diann-input/${libraryName}",
             "--out ${dataset_id}-report.tsv",
@@ -58,7 +61,7 @@ process quantitate_DIANN {
         cp diann-input/samples.tsv ${dataset_id}-samples.tsv
         sha512sum ${shellQuote(library.name)} > diann-input/library.sha512
         ${fasta ? "sha512sum ${shellQuote(fasta.name)} > diann-input/fasta.sha512" : ''}
-        ln -s ${shellQuote('../' + library.name)} diann-input/${libraryName}
+        ${libraryPreparation}
         ${fasta ? "ln -s ${shellQuote('../' + fasta.name)} diann-input/source.fasta" : ''}
         : > diann-input/filelist_diann.txt
         ${cfgCommands}
@@ -74,6 +77,7 @@ process quantitate_DIANN {
                 cat diann.log >&2
                 exit 1
             }
+        ${fragmentAnnotationCheck}
         if ! find . -maxdepth 1 -type f \\( -name '${dataset_id}-report.tsv' -o -name '${dataset_id}-report.parquet' \\) -size +0c | grep -q .; then
             echo 'DIA-NN completed without a nonempty main report; DIA-NN log follows:' >&2
             cat diann.log >&2
