@@ -40,8 +40,8 @@ def prepare_library(source: Path, destination: Path) -> int:
                     match = ANNOTATION.fullmatch(annotation)
                     if not match:
                         raise ValueError(
-                            f"Cannot determine fragment type, series number, and charge from Annotation {annotation!r} "
-                            f"at line {reader.line_num}"
+                            "Cannot determine fragment type, series number, and charge from "
+                            f"Annotation {annotation!r} at line {reader.line_num}"
                         )
                     expected = {
                         "FragmentType": match.group(1),
@@ -67,6 +67,7 @@ def prepare_library(source: Path, destination: Path) -> int:
 
 
 def main() -> None:
+    """Parse command-line arguments and prepare the EasyPQP library."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
