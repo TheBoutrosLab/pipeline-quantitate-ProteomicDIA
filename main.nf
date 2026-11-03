@@ -12,38 +12,39 @@ def readSamples(String inputCsv) {
             error "Input CSV has no samples: ${csv}"
         }
         def sampleNames = [] as Set
-        def mzmlNames = [] as Set
-        def mzmlPaths = [] as Set
+        def acquisitionNames = [] as Set
+        def acquisitionPaths = [] as Set
         def ordered = rows.collect { row ->
-            if (row.keySet() != (['sample_name', 'mzML'] as Set)) {
-                error "${csv} must have exactly sample_name,mzML columns"
+            if (!row.containsKey('sample_name') || !row.containsKey('path')) {
+                error "${csv} must contain sample_name and path columns"
             }
             def sampleName = row.sample_name?.trim()
             if (!(sampleName ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/) || sampleName in ['.', '..']) {
                 error "Invalid sample_name in ${csv}: ${row.sample_name}"
             }
             if (!sampleNames.add(sampleName)) {
-                error "Duplicate sample_name in ${csv}: ${sampleName}; v1 accepts one mzML per sample"
+                error "Duplicate sample_name in ${csv}: ${sampleName}; one acquisition is allowed per sample"
             }
-            def rawPath = row.mzML?.trim()
+            def rawPath = row.path?.trim()
             if (!rawPath) {
-                error "Missing mzML path for ${sampleName}"
+                error "Missing acquisition path for ${sampleName}"
             }
-            def mzml = file(rawPath.startsWith('/') ? rawPath : "${csv.parent}/${rawPath}")
-            if (!mzml.isFile() || !mzml.name.toLowerCase().endsWith('.mzml')) {
-                error "Missing or invalid mzML for ${sampleName}: ${mzml}"
+            def acquisition = file(rawPath.startsWith('/') ? rawPath : "${csv.parent}/${rawPath}")
+            if (!((acquisition.isFile() && acquisition.name.toLowerCase().endsWith('.mzml')) ||
+                  (acquisition.isDirectory() && acquisition.name.toLowerCase().endsWith('.d')))) {
+                error "Input for ${sampleName} must be an existing mzML file or Bruker .d directory: ${acquisition}"
             }
-            if (!(mzml.name ==~ /[A-Za-z0-9][A-Za-z0-9._-]*\.[mM][zZ][mM][lL]/)) {
-                error "mzML filename must use letters, numbers, dots, underscores or hyphens: ${mzml.name}"
+            if (!(acquisition.name ==~ /[A-Za-z0-9][A-Za-z0-9._-]*\.([mM][zZ][mM][lL]|[dD])/)) {
+                error "Acquisition name must use letters, numbers, dots, underscores or hyphens: ${acquisition.name}"
             }
-            if (!mzmlNames.add(mzml.name.toLowerCase()) || !mzmlPaths.add(mzml.toRealPath().toString())) {
-                error "Duplicate mzML name or path: ${mzml}"
+            if (!acquisitionNames.add(acquisition.name.toLowerCase()) || !acquisitionPaths.add(acquisition.toRealPath().toString())) {
+                error "Duplicate acquisition name or path: ${acquisition}"
             }
-            [sampleName: sampleName, mzml: mzml]
+            [sampleName: sampleName, acquisition: acquisition]
         }.sort { it.sampleName }
         def fastaPath = params.get('fasta')
         def references = [file(params.library)] + (fastaPath ? [file(fastaPath)] : [])
-        tuple(params.dataset_id, references, ordered*.sampleName, ordered*.mzml)
+        tuple(params.dataset_id, references, ordered*.sampleName, ordered*.acquisition)
     }
 }
 

@@ -1,16 +1,18 @@
 /** Quantify a cohort against one EasyPQP TSV or DIA-NN .speclib library. */
 process quantitate_DIANN {
     container params.docker_image_fragpipe
+    stageInMode params.copy_inputs_to_work ? 'copy' : 'symlink'
 
     publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy'
 
     input:
-        tuple val(dataset_id), path(references), val(sample_names), path(mzmls)
+        tuple val(dataset_id), path(references), val(sample_names), path(acquisitions)
 
     output:
         path("${dataset_id}-report*"), emit: reports
         path('diann.log'), emit: log
         path('output.sha512'), emit: checksum
+        path("${dataset_id}-samples.tsv"), emit: manifest
 
     script:
         def library = references[0]
@@ -42,17 +44,18 @@ process quantitate_DIANN {
             }
         }
         def cfgCommands = cfgRows.collect { "printf '%s\\n' ${shellQuote(it)} >> diann-input/filelist_diann.txt" }.join('\n')
-        def filelistRows = mzmls.collect {
+        def filelistRows = acquisitions.collect {
             "printf '%s\\n' \"--f \$PWD/${it.name}\" >> diann-input/filelist_diann.txt"
         }.join('\n')
         def manifestRows = (0..<sample_names.size()).collect { i ->
-            "printf '%s\\t%s\\n' '${sample_names[i]}' '${mzmls[i].name}' >> diann-input/samples.tsv"
+            "printf '%s\\t%s\\n' '${sample_names[i]}' '${acquisitions[i].name}' >> diann-input/samples.tsv"
         }.join('\n')
         """
         set -euo pipefail
         mkdir -p diann-input
-        printf 'sample_name\\tmzML\\n' > diann-input/samples.tsv
+        printf 'sample_name\\tacquisition\\n' > diann-input/samples.tsv
         ${manifestRows}
+        cp diann-input/samples.tsv ${dataset_id}-samples.tsv
         sha512sum ${shellQuote(library.name)} > diann-input/library.sha512
         ${fasta ? "sha512sum ${shellQuote(fasta.name)} > diann-input/fasta.sha512" : ''}
         ln -s ${shellQuote('../' + library.name)} diann-input/${libraryName}
@@ -78,6 +81,6 @@ process quantitate_DIANN {
             ls -lah . >&2
             exit 1
         fi
-        find . -maxdepth 1 -type f \\( -name '${dataset_id}-report*' -o -name 'diann.log' \\) -print0 | sort -z | xargs -0 -r sha512sum > output.sha512
+        find . -maxdepth 1 -type f \\( -name '${dataset_id}-report*' -o -name 'diann.log' -o -name '${dataset_id}-samples.tsv' \\) -print0 | sort -z | xargs -0 -r sha512sum > output.sha512
         """
 }

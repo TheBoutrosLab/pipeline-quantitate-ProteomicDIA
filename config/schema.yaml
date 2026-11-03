@@ -7,7 +7,7 @@ input_csv:
   type: 'Path'
   mode: 'r'
   required: true
-  help: 'CSV with exactly sample_name,mzML columns; one unfractionated DIA mzML per sample'
+  help: 'CSV requiring sample_name and path columns; extra columns are allowed; one mzML file or Bruker .d directory per sample'
 library:
   type: 'Path'
   mode: 'r'
@@ -27,6 +27,10 @@ output_dir:
   type: Namespace
   required: true
   help: 'DIA-NN command options; snake_case keys map directly to --kebab-case flags'
+copy_inputs_to_work:
+  type: 'Bool'
+  required: false
+  help: 'Copy staged acquisitions and reference files into the task work directory instead of symlinking them'
 docker_image_fragpipe:
   type: 'String'
   required: false
