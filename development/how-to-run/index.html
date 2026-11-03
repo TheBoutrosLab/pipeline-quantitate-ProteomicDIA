@@ -82,7 +82,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">How to run</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/5d1c6cb2e8a33dd9f5e58b3549619e41c7fa398b/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/dcc461e1c672b0799f57439cf2b03af0ab8b966e/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -102,10 +102,10 @@ params {
     output_dir = '/data/results'
 }
 </code></pre>
-<p>The CSV has exactly <code>sample_name,mzML</code> columns, one mzML per biological sample. Relative mzML paths resolve from the CSV directory. Sample names and mzML filenames must be unique. mzML filenames may contain letters, numbers, dots, underscores, and hyphens. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.</p>
-<pre><code class="language-csv">sample_name,mzML
+<p>The CSV requires <code>sample_name</code> and <code>path</code> columns, one mzML file or Bruker <code>.d</code> directory per biological sample. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample names and acquisition basenames must be unique. Basenames may contain letters, numbers, dots, underscores, and hyphens. Supply the original <code>.d</code> directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.</p>
+<pre><code class="language-csv">sample_name,path
 sample_01,/data/sample_01.mzML
-sample_02,/data/sample_02.mzML
+sample_02,/data/sample_02.d
 </code></pre>
               
             </div>
