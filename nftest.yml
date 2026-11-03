@@ -11,6 +11,11 @@ cases:
     nf_config: test/test-integration-DIANN/test.config
     skip: true
     verbose: true
+  - name: test-integration-DIANN-bruker
+    message: Quantify one Bruker dia-PASEF .d acquisition against its EasyPQP library
+    nf_script: main.nf
+    nf_config: test/test-integration-DIANN-bruker/test.config
+    verbose: true
   - name: test-integration-DIANN-predicted
     message: Quantify one DIA cohort against a predicted .speclib library
     nf_script: main.nf

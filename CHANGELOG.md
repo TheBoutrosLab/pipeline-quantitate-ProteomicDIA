@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add optional copy staging of acquisitions and reference inputs into the task work directory, enabled in the HeLa dia-PASEF integration case.
+- Add a HeLa dia-PASEF DIA-NN integration case using the original `.d` acquisition and its generated EasyPQP library.
+- Accept original Bruker `.d` acquisition directories alongside mzML files and publish the sample-to-acquisition manifest ([#8](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/8)).
+
 ## [1.1.0] - 2026-10-22
 
 ### Added
