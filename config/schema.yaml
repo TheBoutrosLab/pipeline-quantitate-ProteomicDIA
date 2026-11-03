@@ -31,6 +31,10 @@ copy_inputs_to_work:
   type: 'Bool'
   required: false
   help: 'Copy staged acquisitions and reference files into the task work directory instead of symlinking them'
+docker_image_pyopenms:
+  type: 'String'
+  required: false
+  help: 'Container for EasyPQP TSV preparation; default ghcr.io/theboutroslab/pyopenms:3.5.0'
 docker_image_fragpipe:
   type: 'String'
   required: false

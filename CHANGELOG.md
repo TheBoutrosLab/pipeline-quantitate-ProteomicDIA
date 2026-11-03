@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Preserve and validate fragment type, series number, charge, and neutral loss from EasyPQP annotations in a staged DIA-NN TSV library ([#9](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/9)).
+
 ### Added
 
 - Add optional copy staging of acquisitions and reference inputs into the task work directory, enabled in the HeLa dia-PASEF integration case.
