@@ -7,15 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- Preserve and validate fragment type, series number, charge, and neutral loss from EasyPQP annotations in a staged DIA-NN TSV library ([#9](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/9)).
+## [1.2.0] - 2026-11-03
 
 ### Added
 
 - Add optional copy staging of acquisitions and reference inputs into the task work directory, enabled in the HeLa dia-PASEF integration case.
 - Add a HeLa dia-PASEF DIA-NN integration case using the original `.d` acquisition and its generated EasyPQP library.
 - Accept original Bruker `.d` acquisition directories alongside mzML files and publish the sample-to-acquisition manifest ([#8](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/8)).
+
+### Fixed
+
+- Preserve and validate fragment type, series number, charge, and neutral loss from EasyPQP annotations in a staged DIA-NN TSV library ([#9](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/9)).
 
 ## [1.1.0] - 2026-10-22
 
@@ -49,4 +51,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.0.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/releases/tag/v1.0.0
 [1.1.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.0.0...v1.1.0
-[unreleased]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.1.0...HEAD
+[1.2.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.1.0...v1.2.0
+[unreleased]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.2.0...HEAD
