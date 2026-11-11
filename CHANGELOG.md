@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use upstream R lintr with project-specific four-space indentation while retaining the existing Python and YAML static checks.
+
 ### Added
 
 - Quantify fractionated DIA cohorts with fraction-specific EasyPQP libraries and publish only combined report, precursor, peptide, and protein-group quantities across fractions ([#13](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/13)).

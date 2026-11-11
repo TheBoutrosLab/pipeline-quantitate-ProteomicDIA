@@ -15,3 +15,20 @@ jobs:
 
     steps:
       - uses: TheBoutrosLab/tool-static-analysis@v1
+
+  r-lintr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.5.2'
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: any::lintr
+      - name: Lint R scripts
+        run: >-
+          Rscript -e 'lints <- lintr::lint_dir("src");
+          if (length(lints)) { print(lints); quit(status = 1L) }'

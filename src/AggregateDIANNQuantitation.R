@@ -54,19 +54,19 @@ read_manifests <- function(report_path, acquisition_path) {
     report_columns      <- c("fraction_id", "report_tsv")
     acquisition_columns <- c("fraction_id", "sample_name", "acquisition")
     if (!all(report_columns %in% names(manifest)) ||
-        !all(acquisition_columns %in% names(acquisitions))) {
+            !all(acquisition_columns %in% names(acquisitions))) {
         stop("Report or acquisition manifest lacks required columns")
     }
     if (!nrow(manifest) || !nrow(acquisitions)) {
         stop("Report and acquisition manifests must be nonempty")
     }
     if (anyNA(manifest[, ..report_columns]) ||
-        anyNA(acquisitions[, ..acquisition_columns])) {
+            anyNA(acquisitions[, ..acquisition_columns])) {
         stop("Report and acquisition manifests cannot contain missing mappings")
     }
     if (anyDuplicated(manifest$fraction_id) ||
-        anyDuplicated(acquisitions[, .(fraction_id, sample_name)]) ||
-        anyDuplicated(acquisitions$acquisition)) {
+            anyDuplicated(acquisitions[, .(fraction_id, sample_name)]) ||
+            anyDuplicated(acquisitions$acquisition)) {
         stop("Duplicate fraction or acquisition mapping")
     }
     if (!setequal(manifest$fraction_id, acquisitions$fraction_id)) {
