@@ -11,6 +11,11 @@ cases:
     nf_config: test/test-integration-DIANN/test.config
     skip: true
     verbose: true
+  - name: test-integration-DIANN-fractionated
+    message: Quantify two E. coli samples across three DIA fractions
+    nf_script: main.nf
+    nf_config: test/test-integration-DIANN-fractionated/test.config
+    verbose: true
   - name: test-integration-DIANN-bruker
     message: Quantify one Bruker dia-PASEF .d acquisition against its EasyPQP library
     nf_script: main.nf

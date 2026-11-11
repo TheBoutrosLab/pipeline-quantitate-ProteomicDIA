@@ -12,7 +12,7 @@ from pathlib import Path
 ANNOTATION = re.compile(r"([abcxyz])([1-9][0-9]*)\^([1-9][0-9]*)(?:-(H2O|NH3|CO|H3PO4))?")
 
 
-def prepare_library(source: Path, destination: Path) -> int:
+def prepare_library(source: Path, destination: Path, fraction_id: str | None = None) -> int:
     """Write a validated DIA-NN TSV and return the number of fragment rows."""
     if source.resolve() == destination.resolve():
         raise ValueError("The DIA-NN library destination must differ from the source library")
@@ -22,8 +22,14 @@ def prepare_library(source: Path, destination: Path) -> int:
         fields = reader.fieldnames
         if not fields or len(fields) != len(set(fields)) or "Annotation" not in fields:
             raise ValueError("EasyPQP library needs unique columns including Annotation")
+        has_fraction = "fraction_id" in fields
+        if fraction_id and not has_fraction:
+            raise ValueError("Fractionated input requires a fraction_id library column")
+        if has_fraction and not fraction_id:
+            raise ValueError("Annotated library requires a matching fraction_id")
         annotations = ("FragmentType", "FragmentSeriesNumber", "FragmentCharge", "FragmentLossType")
-        output_fields = [*fields, *(name for name in annotations if name not in fields)]
+        output_fields = [*(name for name in fields if name != "fraction_id"),
+                         *(name for name in annotations if name not in fields)]
         destination.parent.mkdir(parents=True, exist_ok=True)
         temporary = destination.with_name(destination.name + ".tmp")
         count = 0
@@ -36,6 +42,10 @@ def prepare_library(source: Path, destination: Path) -> int:
                 for row in reader:
                     if None in row or any(value is None for value in row.values()):
                         raise ValueError(f"Malformed TSV row at line {reader.line_num}")
+                    if has_fraction:
+                        if row["fraction_id"].strip() != fraction_id:
+                            continue
+                        del row["fraction_id"]
                     annotation = row["Annotation"].strip()
                     match = ANNOTATION.fullmatch(annotation)
                     if not match:
@@ -71,8 +81,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--fraction-id")
     args = parser.parse_args()
-    count = prepare_library(args.input, args.output)
+    count = prepare_library(args.input, args.output, args.fraction_id)
     print(f"Validated fragment annotations for {count} EasyPQP library rows")
 
 

@@ -1,6 +1,6 @@
 # Quantitate Proteomic DIA
 
-This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML files or Bruker `.d` directories with DIA-NN from the `fcyucn/fragpipe:24.0` image. It accepts either a cohort EasyPQP TSV from `pipeline-generate-ProteomicSpectralLibrary` or a DIA-NN `.speclib`, including a FASTA-predicted `.predicted.speclib`. One DIA-NN invocation processes all samples so cross-run quantities and matrices are calculated together.
+This Nextflow DSL2 pipeline quantifies cohorts of DIA mzML files or Bruker `.d` directories with DIA-NN from the `fcyucn/fragpipe:24.0` image. It accepts either a cohort EasyPQP TSV from `pipeline-generate-ProteomicSpectralLibrary` or a DIA-NN `.speclib`, including a FASTA-predicted `.predicted.speclib`. DIA-NN processes all samples together within each fraction. An R aggregation step combines the fraction reports into sample-level matrices.
 
 ## How to run
 
@@ -19,7 +19,7 @@ params {
 }
 ```
 
-The CSV requires `sample_name` and `path` columns, one mzML file or Bruker `.d` directory per biological sample. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample names and acquisition basenames must be unique. Basenames may contain letters, numbers, dots, underscores, and hyphens. Supply the original `.d` directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. Fractions used earlier for library construction need not be listed. Fractionated quantification samples are outside the scope of this first version.
+The CSV requires `sample_name` and `path`. For fractionated cohorts it also requires `fraction_id`, with one acquisition per sample/fraction pair. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample/fraction pairs and acquisition basenames must be unique. Basenames may contain letters, numbers, dots, underscores, and hyphens. Supply the original `.d` directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. For fractionated quantitation, the EasyPQP library must contain a `fraction_id` column. The pipeline prepares a separate library and runs DIA-NN once per fraction. The legacy two-column CSV remains valid with an unannotated library.
 
 ```csv
 sample_name,path
@@ -32,19 +32,20 @@ sample_02,/data/sample_02.d
 | Parameter | Required | Description |
 | --- | --- | --- |
 | `dataset_id` | Yes | Cohort identifier and output name. |
-| `input_csv` | Yes | Sample to mzML or Bruker .d mapping. |
+| `input_csv` | Yes | Sample, optional fraction, and mzML or Bruker .d mapping. |
 | `library` | Yes | Nonempty EasyPQP `.tsv` or DIA-NN `.speclib`. |
 | `fasta` | For predicted libraries | Matching source FASTA; also required if reannotating. |
 | `output_dir` | Yes | Output root. |
 | `params { 'DIA-NN' { ... } }` | No | DIA-NN option namespace; each snake_case key maps directly to a `--kebab-case` flag. |
 | `docker_image_fragpipe` | No | DIA-NN image, default `fcyucn/fragpipe:24.0`. |
+| `docker_image_diann_rpackage` | No | R aggregation image; default `ghcr.io/theboutroslab/diann-rpackage:af538f6`. Override with the locally built image tag until publication. |
 | `docker_image_pyopenms` | No | EasyPQP TSV preparation image, default `ghcr.io/theboutroslab/pyopenms:3.5.0`. |
 | `copy_inputs_to_work` | No | Copy acquisitions and reference inputs into the task work directory before DIA-NN; default `false` uses symlinks. Useful for remote mounts, at the cost of transfer time and local disk space. |
 | `work_dir` | No | Nextflow work directory. Prefer scratch space; large mzML and DIA-NN temporary files can consume substantial storage. |
 
 ## Outputs
 
-Results are published directly under `quantitate-ProteomicDIA-1.0.0/<dataset_id>/output/DIA-NN/`: all DIA-NN files beginning with `<dataset_id>-report`, plus `diann.log`, `output.sha512`, and a `<dataset_id>-samples.tsv` manifest mapping sample names to staged acquisitions. The checksum file covers the published reports, manifest, and `diann.log`. The generated input list and prepared-library checksum stay in the DIA-NN work directory; the prepared TSV stays in the library-preparation work directory. Nextflow logs and the effective parameter record are published under a timestamped `log-*` directory.
+Final results are published under `quantitate-ProteomicDIA-<version>/<dataset_id>/output/DIA-NN/`. The R aggregation writes `<dataset_id>-report.tsv` with one row per sample and precursor, `.pr_matrix.tsv` and `.pg_matrix.tsv` matrices, modified- and stripped-peptide matrices, fraction coverage, and `output.sha512`. Gene-related matrices and fields are not part of the combined output. The report retains native non-gene DIA-NN columns in their original order. It sums `Precursor.Quantity`, `Precursor.Normalised`, `PG.Quantity`, and `PG.Normalised` across observed fractions and recalculates `PG.MaxLFQ` with the DIA-NN R package. Other native columns, including scores, RT, fragment metrics, and q-values, come from the lowest-q-value representative fraction and are identified by `Representative.Fraction.ID` and `Uncombined.Fields.Scope`. Native fraction-specific files remain intermediate Nextflow work files and are not published.
 
 The default `params { 'DIA-NN' { ... } }` namespace reproduces FragPipe's q-value thresholds, matrices, profiling, quantification, and report options. For the TSV library, `no_prot_inf` defaults to `true`; for a `.speclib`, it defaults to `false`. Override individual keys in the run config:
 
@@ -60,7 +61,7 @@ params {
 }
 ```
 
-A `true` Boolean emits a flag; `false` omits it. A string or number emits a flag with that value. A list repeats the flag for each value, such as `var_mod = ['UniMod:35,15.994915,M', 'UniMod:21,79.966331,STY']` inside the namespace. Pipeline-managed file and execution options (`lib`, `fasta`, `f`, `dir`, `out`, `threads`, `cfg`) cannot be set here. Version-specific options must be supported by the DIA-NN binary in the selected image, and file-valued options must refer to paths visible inside the container. With `copy_inputs_to_work = true`, Nextflow copies all staged inputs, including `.d` directories, into the task work directory before DIA-NN runs. The pipeline writes these options, the staged library and FASTA paths, and all acquisitions to the work-directory `diann-input/filelist_diann.txt`, then invokes DIA-NN with only `--cfg diann-input/filelist_diann.txt--`. The bundled version may print `WARNING: unrecognised option [--]` while still loading the runs. This pipeline does not merge fraction quantities.
+A `true` Boolean emits a flag; `false` omits it. A string or number emits a flag with that value. A list repeats the flag for each value, such as `var_mod = ['UniMod:35,15.994915,M', 'UniMod:21,79.966331,STY']` inside the namespace. Pipeline-managed file and execution options (`lib`, `fasta`, `f`, `dir`, `out`, `threads`, `cfg`) cannot be set here. Version-specific options must be supported by the DIA-NN binary in the selected image, and file-valued options must refer to paths visible inside the container. With `copy_inputs_to_work = true`, Nextflow copies all staged inputs, including `.d` directories, into the task work directory before DIA-NN runs. The pipeline writes these options, the staged library and FASTA paths, and all acquisitions to the work-directory `diann-input/filelist_diann.txt`, then invokes DIA-NN with only `--cfg diann-input/filelist_diann.txt--`. The bundled version may print `WARNING: unrecognised option [--]` while still loading the runs. The aggregation uses confident `Precursor.Normalised` observations, sums repeated precursor quantities across fractions, and applies `diann_maxlfq()` to sample-level precursor quantities. No additional cross-fraction intensity scaling is applied. The aggregated precursor and protein-group matrices use DIA-NN-compatible `.pr_matrix.tsv` and `.pg_matrix.tsv` suffixes and identifier columns, with biological sample names as quantity columns. They are published in `output/DIA-NN/` and remain custom estimates: the protein values come from the DIA-NN R package, not DIA-NN’s internal QuantUMS or MaxLFQ calculation.
 
 ## Testing
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Quantify fractionated DIA cohorts with fraction-specific EasyPQP libraries and publish only combined report, precursor, peptide, and protein-group quantities across fractions ([#13](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/13)).
+
 ## [1.2.0] - 2026-11-03
 
 ### Added
