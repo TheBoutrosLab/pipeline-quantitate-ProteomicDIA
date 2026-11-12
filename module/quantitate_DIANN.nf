@@ -2,12 +2,17 @@
 process quantitate_DIANN {
     container params.docker_image_fragpipe
     stageInMode params.copy_inputs_to_work ? 'copy' : 'symlink'
-
+    publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: "${params.dataset_id}-report*"
+    publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: 'diann.log'
+    publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: 'output.sha512'
 
     input:
         tuple val(fraction_id), val(dataset_id), path(references), val(sample_names), path(acquisitions)
 
     output:
+        path("${fraction_id == 'unfractionated' ? dataset_id : dataset_id + '-' + fraction_id}-report*"), emit: native_reports
+        path('diann.log'), emit: log
+        path('output.sha512'), emit: checksum
         tuple val(fraction_id), path("${fraction_id == 'unfractionated' ? dataset_id : dataset_id + '-' + fraction_id}-report.tsv"), emit: report_manifest
         tuple val(fraction_id), path("${fraction_id == 'unfractionated' ? dataset_id : dataset_id + '-' + fraction_id}-samples.tsv"), emit: sample_manifest
 

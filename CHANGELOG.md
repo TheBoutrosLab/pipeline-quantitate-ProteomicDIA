@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use upstream R lintr with project-specific four-space indentation while retaining the existing Python and YAML static checks.
+- Preserve native DIA-NN reports for unfractionated cohorts and run cross-fraction R aggregation only when fractions are present.
 
 ### Added
 
