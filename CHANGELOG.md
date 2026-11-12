@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use upstream R lintr with project-specific four-space indentation while retaining the existing Python and YAML static checks.
+- Preserve native DIA-NN reports for unfractionated cohorts and run cross-fraction R aggregation only when fractions are present.
+
+### Added
+
+- Quantify fractionated DIA cohorts with fraction-specific EasyPQP libraries and publish only combined report, precursor, peptide, and protein-group quantities across fractions ([#13](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/13)).
+- Publish the sample-to-acquisition table and fraction-specific DIA-NN logs with the final results.
+
 ## [1.2.0] - 2026-11-03
 
 ### Added

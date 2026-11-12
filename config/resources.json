@@ -1,9 +1,11 @@
 {
   "default": {
-    "prepare_EasyPQPLibrary": {
+    "split_EasyPQPLibrary": {
       "cpus": {"min": 1, "fraction": 0.1, "max": 1},
       "memory": {"min": "2 GB", "fraction": 0.1, "max": "4 GB"}
     },
+    "write_DIANNReportManifest": {"cpus": {"min": 1, "fraction": 0.1, "max": 1}, "memory": {"min": "1 GB", "fraction": 0.1, "max": "2 GB"}},
+    "aggregate_DIANNQuantitation": {"cpus": {"min": 1, "fraction": 0.1, "max": 1}, "memory": {"min": "4 GB", "fraction": 0.1, "max": "16 GB"}},
     "quantitate_DIANN": {
       "cpus": {"min": 8, "fraction": 1.0, "max": 16},
       "memory": {"min": "64 GB", "fraction": 1.0, "max": "128 GB"},
