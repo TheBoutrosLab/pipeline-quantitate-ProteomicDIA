@@ -25,9 +25,8 @@ jobs:
         with:
           r-version: '4.5.2'
           use-public-rspm: true
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: any::lintr
+      - name: Install upstream lintr
+        run: Rscript -e 'install.packages("lintr", repos = "https://cloud.r-project.org")'
       - name: Lint R scripts
         run: >-
           Rscript -e 'lints <- lintr::lint_dir("src");
