@@ -70,13 +70,15 @@
 
   <path class="line" d="M 905 637 V 673"/>
   <path class="arrowhead" d="M 905 684 L 899 673 H 911 Z"/>
-  <rect class="output" x="95" y="684" width="400" height="100" rx="12"/>
-  <text class="title center" x="295" y="719">Native DIA-NN output</text>
-  <text class="small center" x="295" y="746">&lt;dataset_id&gt;-report*</text>
-  <text class="small center" x="295" y="768">diann.log + output.sha512</text>
+  <rect class="output" x="95" y="684" width="400" height="126" rx="12"/>
+  <text class="title center" x="295" y="716">Native DIA-NN output</text>
+  <text class="small center" x="295" y="743">&lt;dataset_id&gt;-report*</text>
+  <text class="small center" x="295" y="766">diann.log + acquisitions.tsv</text>
+  <text class="small center" x="295" y="789">output.sha512</text>
 
-  <rect class="output" x="705" y="684" width="400" height="100" rx="12"/>
-  <text class="title center" x="905" y="719">Combined sample output</text>
-  <text class="small center" x="905" y="746">&lt;dataset_id&gt;-report.tsv + matrices</text>
-  <text class="small center" x="905" y="768">output.sha512</text>
+  <rect class="output" x="705" y="684" width="400" height="126" rx="12"/>
+  <text class="title center" x="905" y="716">Combined sample output</text>
+  <text class="small center" x="905" y="743">&lt;dataset_id&gt;-report.tsv + matrices</text>
+  <text class="small center" x="905" y="766">acquisitions.tsv + fraction logs</text>
+  <text class="small center" x="905" y="789">output.sha512</text>
 </svg>

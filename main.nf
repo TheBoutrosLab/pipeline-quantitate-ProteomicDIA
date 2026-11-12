@@ -82,7 +82,7 @@ workflow {
     quantitate_DIANN(samples)
     if (params.library_has_fractions) {
         write_DIANNReportManifest(quantitate_DIANN.out.report_manifest.collect(flat: false),
-                                  quantitate_DIANN.out.sample_manifest.collect(flat: false))
+                                  quantitate_DIANN.out.acquisition_manifest.collect(flat: false))
         aggregate_DIANNQuantitation(write_DIANNReportManifest.out.manifest)
     }
 }

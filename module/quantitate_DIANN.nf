@@ -5,6 +5,8 @@ process quantitate_DIANN {
     publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: "${params.dataset_id}-report*"
     publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: 'diann.log'
     publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: 'output.sha512'
+    publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: !params.library_has_fractions, pattern: 'acquisitions.tsv'
+    publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', enabled: params.library_has_fractions, pattern: "${params.dataset_id}-*-diann.log"
 
     input:
         tuple val(fraction_id), val(dataset_id), path(references), val(sample_names), path(acquisitions)
@@ -12,9 +14,10 @@ process quantitate_DIANN {
     output:
         path("${fraction_id == 'unfractionated' ? dataset_id : dataset_id + '-' + fraction_id}-report*"), emit: native_reports
         path('diann.log'), emit: log
+        path("${dataset_id}-${fraction_id}-diann.log"), optional: true, emit: fraction_log
         path('output.sha512'), emit: checksum
         tuple val(fraction_id), path("${fraction_id == 'unfractionated' ? dataset_id : dataset_id + '-' + fraction_id}-report.tsv"), emit: report_manifest
-        tuple val(fraction_id), path("${fraction_id == 'unfractionated' ? dataset_id : dataset_id + '-' + fraction_id}-samples.tsv"), emit: sample_manifest
+        tuple val(fraction_id), path('acquisitions.tsv'), emit: acquisition_manifest
 
     script:
         def outputPrefix = fraction_id == 'unfractionated' ? dataset_id : "${dataset_id}-${fraction_id}"
@@ -54,14 +57,13 @@ process quantitate_DIANN {
             "printf '%s\\n' \"--f \$PWD/${it.name}\" >> diann-input/filelist_diann.txt"
         }.join('\n')
         def manifestRows = (0..<sample_names.size()).collect { i ->
-            "printf '%s\\t%s\\n' '${sample_names[i]}' '${acquisitions[i].name}' >> diann-input/samples.tsv"
+            "printf '%s\\t%s\\t%s\\n' '${fraction_id}' '${sample_names[i]}' '${acquisitions[i].name}' >> acquisitions.tsv"
         }.join('\n')
         """
         set -euo pipefail
         mkdir -p diann-input
-        printf 'sample_name\\tacquisition\\n' > diann-input/samples.tsv
+        printf 'fraction_id\\tsample_name\\tacquisition\\n' > acquisitions.tsv
         ${manifestRows}
-        cp diann-input/samples.tsv ${outputPrefix}-samples.tsv
         sha512sum ${shellQuote(library.name)} > diann-input/library.sha512
         ${fasta ? "sha512sum ${shellQuote(fasta.name)} > diann-input/fasta.sha512" : ''}
         ${libraryPreparation}
@@ -88,6 +90,9 @@ process quantitate_DIANN {
             ls -lah . >&2
             exit 1
         fi
-        find . -maxdepth 1 -type f \\( -name '${outputPrefix}-report*' -o -name 'diann.log' -o -name '${outputPrefix}-samples.tsv' \\) -print0 | sort -z | xargs -0 -r sha512sum > output.sha512
+        if [ '${fraction_id}' != 'unfractionated' ]; then
+            cp diann.log ${outputPrefix}-diann.log
+        fi
+        find . -maxdepth 1 -type f \\( -name '${outputPrefix}-report*' -o -name 'diann.log' -o -name 'acquisitions.tsv' \\) -print0 | sort -z | xargs -0 -r sha512sum > output.sha512
         """
 }

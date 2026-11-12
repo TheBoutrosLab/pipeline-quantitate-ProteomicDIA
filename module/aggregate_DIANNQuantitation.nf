@@ -17,6 +17,6 @@ process aggregate_DIANNQuantitation {
         Rscript ${projectDir}/src/AggregateDIANNQuantitation.R \\
           --manifest ${report_manifest} --acquisitions ${acquisitions} \\
           --dataset-id ${params.dataset_id} --qvalue ${params['DIA-NN'].qvalue}
-        sha512sum ${params.dataset_id}-report.tsv ${params.dataset_id}-report.*.tsv > output.sha512
+        sha512sum ${params.dataset_id}-report.tsv ${params.dataset_id}-report.*.tsv ${acquisitions} > output.sha512
         """
 }

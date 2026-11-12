@@ -1,8 +1,10 @@
 /** Collect fraction reports into a stable manifest for R aggregation. */
 process write_DIANNReportManifest {
+    publishDir path: "${params.output_dir_base}/output/DIA-NN", mode: 'copy', pattern: 'acquisitions.tsv'
+
     input:
         val(report_pairs)
-        val(sample_pairs)
+        val(acquisition_pairs)
 
     output:
         tuple path('diann-reports.csv'), path('reports/*'), path('acquisitions.tsv'), emit: manifest
@@ -14,8 +16,8 @@ process write_DIANNReportManifest {
             def reportName = new File(report).name
             "cp '${report}' 'reports/${reportName}'; printf '%s,%s\\n' '${fraction}' '${reportName}' >> diann-reports.csv"
         }.join('\n')
-        def sampleRows = sample_pairs.sort { it[0] }.collect { pair ->
-            "tail -n +2 '${pair[1]}' | awk -F '\\t' -v f='${pair[0]}' 'BEGIN {OFS=\"\\t\"} {print f,\$1,\$2}' >> acquisitions.tsv"
+        def acquisitionRows = acquisition_pairs.sort { it[0] }.collect { pair ->
+            "tail -n +2 '${pair[1]}' >> acquisitions.tsv"
         }.join('\n')
         """
         set -euo pipefail
@@ -23,6 +25,6 @@ process write_DIANNReportManifest {
         printf 'fraction_id,report_tsv\\n' > diann-reports.csv
         ${rows}
         printf 'fraction_id\\tsample_name\\tacquisition\\n' > acquisitions.tsv
-        ${sampleRows}
+        ${acquisitionRows}
         """
 }
