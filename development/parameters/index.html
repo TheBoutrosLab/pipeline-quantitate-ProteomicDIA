@@ -82,7 +82,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Parameters</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/07fbd00b6820273cf66ba1dbac9b7ea0bb2d5676/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/2c07433304caae8fc9daacbed174b40d078904fc/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -108,7 +108,7 @@
 <tr>
 <td><code>input_csv</code></td>
 <td>Yes</td>
-<td>Sample to mzML or Bruker .d mapping.</td>
+<td>Sample, optional fraction, and mzML or Bruker .d mapping.</td>
 </tr>
 <tr>
 <td><code>library</code></td>
@@ -134,6 +134,11 @@
 <td><code>docker_image_fragpipe</code></td>
 <td>No</td>
 <td>DIA-NN image, default <code>fcyucn/fragpipe:24.0</code>.</td>
+</tr>
+<tr>
+<td><code>docker_image_diann_rpackage</code></td>
+<td>No</td>
+<td>R aggregation image; default <code>ghcr.io/theboutroslab/diann-rpackage:af538f6</code>. Override with the locally built image tag until publication.</td>
 </tr>
 <tr>
 <td><code>docker_image_pyopenms</code></td>

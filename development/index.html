@@ -82,7 +82,7 @@
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/07fbd00b6820273cf66ba1dbac9b7ea0bb2d5676/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/2c07433304caae8fc9daacbed174b40d078904fc/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -91,7 +91,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="quantitate-proteomic-dia">Quantitate Proteomic DIA</h1>
-<p>This Nextflow DSL2 pipeline quantifies a cohort of unfractionated DIA mzML files or Bruker <code>.d</code> directories with DIA-NN from the <code>fcyucn/fragpipe:24.0</code> image. It accepts either a cohort EasyPQP TSV from <code>pipeline-generate-ProteomicSpectralLibrary</code> or a DIA-NN <code>.speclib</code>, including a FASTA-predicted <code>.predicted.speclib</code>. One DIA-NN invocation processes all samples so cross-run quantities and matrices are calculated together.</p>
+<p>This Nextflow DSL2 pipeline quantifies cohorts of DIA mzML files or Bruker <code>.d</code> directories with DIA-NN from the <code>fcyucn/fragpipe:24.0</code> image. It accepts either a cohort EasyPQP TSV from <code>pipeline-generate-ProteomicSpectralLibrary</code> or a DIA-NN <code>.speclib</code>, including a FASTA-predicted <code>.predicted.speclib</code>. DIA-NN processes all samples together within each fraction. Unfractionated cohorts retain DIA-NN's native output; an R aggregation step combines reports only for fractionated cohorts.</p>
+<p><img alt="Unfractionated and fractionated DIA-NN quantitation workflows" src="img/flow-diagram.svg?raw=true" /></p>
               
             </div>
           </div><footer>
@@ -144,5 +145,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2026-11-03 18:53:21.176523+00:00
+Build Date UTC : 2026-11-12 05:33:25.400106+00:00
 -->
