@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="825" viewBox="0 0 1200 825" role="img" aria-labelledby="title description">
+  <title id="title">Quantitate Proteomic DIA workflow</title>
+  <desc id="description">The input library and acquisitions pass through EasyPQP library preparation and DIA-NN quantitation. An unfractionated cohort publishes native DIA-NN output directly. Fractionated reports continue through manifest creation and R aggregation to combined output.</desc>
+  <defs>
+    <style>
+      .heading { font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; fill: #173044; }
+      .title { font-family: Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #173044; }
+      .body { font-family: Helvetica, Arial, sans-serif; font-size: 15px; fill: #173044; }
+      .small { font-family: Helvetica, Arial, sans-serif; font-size: 13px; fill: #526879; }
+      .center { text-anchor: middle; }
+      .line { fill: none; stroke: #4b6172; stroke-width: 2.5; }
+      .arrowhead { fill: #4b6172; }
+      .input { fill: #eff4f8; stroke: #9bb1c2; stroke-width: 2; }
+      .process { fill: #fff; stroke: #7398c7; stroke-width: 2; }
+      .fraction-process { fill: #fff; stroke: #70aa90; stroke-width: 2; }
+      .output { fill: #fff8e8; stroke: #d2a956; stroke-width: 2; }
+    </style>
+  </defs>
+  <rect width="1200" height="825" fill="#fff"/>
+
+  <!-- Inputs and quantitation are used by both modes. -->
+  <rect class="input" x="95" y="48" width="400" height="102" rx="12"/>
+  <text class="heading center" x="295" y="81">DIA cohort inputs</text>
+  <text class="body center" x="295" y="110">sample CSV + mzML / Bruker .d</text>
+  <text class="small center" x="295" y="134">EasyPQP TSV or DIA-NN .speclib</text>
+
+  <path class="line" d="M 295 150 V 209"/>
+  <path class="arrowhead" d="M 295 220 L 289 209 H 301 Z"/>
+  <text class="small" x="316" y="186">EasyPQP TSV</text>
+
+  <rect class="process" x="95" y="220" width="400" height="98" rx="12"/>
+  <text class="title center" x="295" y="254">split_EasyPQPLibrary</text>
+  <text class="small center" x="295" y="280">PrepareEasyPQPLibrary.py</text>
+  <text class="small center" x="295" y="301">Skipped for .speclib input</text>
+
+  <path class="line" d="M 295 318 V 379"/>
+  <path class="arrowhead" d="M 295 390 L 289 379 H 301 Z"/>
+  <text class="small" x="316" y="356">prepared library.tsv or direct .speclib</text>
+
+  <rect class="process" x="95" y="390" width="400" height="98" rx="12"/>
+  <text class="title center" x="295" y="424">quantitate_DIANN</text>
+  <text class="small center" x="295" y="450">DIA-NN · all samples within each fraction</text>
+  <text class="small center" x="295" y="471">report.tsv + matrices per run</text>
+
+  <!-- Unfractionated runs publish DIA-NN's own results. -->
+  <path class="line" d="M 295 488 V 673"/>
+  <path class="arrowhead" d="M 295 684 L 289 673 H 301 Z"/>
+  <text class="heading" x="95" y="560">Unfractionated</text>
+  <text class="small" x="95" y="586">Publish DIA-NN results directly</text>
+
+  <!-- Fractionated runs continue from the same DIA-NN process. -->
+  <path class="line" d="M 495 439 H 694"/>
+  <path class="arrowhead" d="M 705 439 L 694 433 V 445 Z"/>
+  <text class="heading center" x="905" y="357">Fractionated</text>
+  <text class="small center" x="905" y="381">one DIA-NN report per fraction</text>
+  <text class="small center" x="600" y="419">fraction reports</text>
+
+  <rect class="fraction-process" x="705" y="390" width="400" height="98" rx="12"/>
+  <text class="title center" x="905" y="424">write_DIANNReportManifest</text>
+  <text class="small center" x="905" y="451">diann-reports.csv</text>
+  <text class="small center" x="905" y="472">acquisitions.tsv</text>
+
+  <path class="line" d="M 905 488 V 528"/>
+  <path class="arrowhead" d="M 905 539 L 899 528 H 911 Z"/>
+  <rect class="fraction-process" x="705" y="539" width="400" height="98" rx="12"/>
+  <text class="title center" x="905" y="573">aggregate_DIANNQuantitation</text>
+  <text class="small center" x="905" y="600">AggregateDIANNQuantitation.R · diann R package</text>
+  <text class="small center" x="905" y="621">cross-fraction sample quantities</text>
+
+  <path class="line" d="M 905 637 V 673"/>
+  <path class="arrowhead" d="M 905 684 L 899 673 H 911 Z"/>
+  <rect class="output" x="95" y="684" width="400" height="100" rx="12"/>
+  <text class="title center" x="295" y="719">Native DIA-NN output</text>
+  <text class="small center" x="295" y="746">&lt;dataset_id&gt;-report*</text>
+  <text class="small center" x="295" y="768">diann.log + output.sha512</text>
+
+  <rect class="output" x="705" y="684" width="400" height="100" rx="12"/>
+  <text class="title center" x="905" y="719">Combined sample output</text>
+  <text class="small center" x="905" y="746">&lt;dataset_id&gt;-report.tsv + matrices</text>
+  <text class="small center" x="905" y="768">output.sha512</text>
+</svg>
