@@ -37,7 +37,7 @@ def readSamples(String inputCsv) {
                   (acquisition.isDirectory() && acquisition.name.toLowerCase().endsWith('.d')))) {
                 error "Input must be an existing mzML file or Bruker .d directory: ${acquisition}"
             }
-            if (!(acquisition.name ==~ /[A-Za-z0-9][A-Za-z0-9._-]*\.([mM][zZ][mM][lL]|[dD])/)) {
+            if (!(acquisition.name ==~ /[A-Za-z0-9][^\t\r\n\/]*\.([mM][zZ][mM][lL]|[dD])/)) {
                 error "Invalid acquisition name: ${acquisition.name}"
             }
             if (!names.add(acquisition.name.toLowerCase()) || !paths.add(acquisition.toRealPath().toString())) {

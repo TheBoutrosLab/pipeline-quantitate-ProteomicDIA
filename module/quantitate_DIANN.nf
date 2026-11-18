@@ -54,10 +54,10 @@ process quantitate_DIANN {
         }
         def cfgCommands = cfgRows.collect { "printf '%s\\n' ${shellQuote(it)} >> diann-input/filelist_diann.txt" }.join('\n')
         def filelistRows = acquisitions.collect {
-            "printf '%s\\n' \"--f \$PWD/${it.name}\" >> diann-input/filelist_diann.txt"
+            "printf '%s\\n' ${shellQuote("--f ${cfgValue(it.name)}")} >> diann-input/filelist_diann.txt"
         }.join('\n')
         def manifestRows = (0..<sample_names.size()).collect { i ->
-            "printf '%s\\t%s\\t%s\\n' '${fraction_id}' '${sample_names[i]}' '${acquisitions[i].name}' >> acquisitions.tsv"
+            "printf '%s\\t%s\\t%s\\n' ${shellQuote(fraction_id)} ${shellQuote(sample_names[i])} ${shellQuote(acquisitions[i].name)} >> acquisitions.tsv"
         }.join('\n')
         """
         set -euo pipefail
@@ -77,6 +77,9 @@ process quantitate_DIANN {
         if [ -z "\$diann_bin" ]; then
             echo 'DIA-NN executable was not found in the FragPipe image' >&2
             exit 1
+        fi
+        if [ "\$(ulimit -S -s)" = unlimited ]; then
+            ulimit -S -s 8192
         fi
         "\$diann_bin" --cfg diann-input/filelist_diann.txt-- > diann.log 2>&1 || {
                 cat diann.log >&2
