@@ -21,7 +21,7 @@ params {
 }
 ```
 
-The CSV requires `sample_name` and `path`. For fractionated cohorts it also requires `fraction_id`, with one acquisition per sample/fraction pair. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample/fraction pairs and acquisition basenames must be unique. Basenames may contain letters, numbers, dots, underscores, and hyphens. Supply the original `.d` directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. For fractionated quantitation, the EasyPQP library must contain a `fraction_id` column. The pipeline prepares a separate library and runs DIA-NN once per fraction. The legacy two-column CSV remains valid with an unannotated library.
+The CSV requires `sample_name` and `path`. For fractionated cohorts it also requires `fraction_id`, with one acquisition per sample/fraction pair. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample/fraction pairs and acquisition basenames must be unique. Acquisition basenames must start with a letter or digit and may contain spaces, but not tabs or newlines. Supply the original `.d` directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. For fractionated quantitation, the EasyPQP library must contain a `fraction_id` column. The pipeline prepares a separate library and runs DIA-NN once per fraction. The legacy two-column CSV remains valid with an unannotated library.
 
 ```csv
 sample_name,path

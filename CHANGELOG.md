@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Use staged acquisition filenames in the DIA-NN file list to avoid crashes with long absolute paths ([#17](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/17)).
+- Cap an inherited unlimited soft stack limit at 8 MiB before launching DIA-NN while preserving finite limits ([#18](https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/issues/18)).
+
 ## [1.3.0] - 2026-11-11
 
 ### Added
