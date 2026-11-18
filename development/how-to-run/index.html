@@ -82,7 +82,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">How to run</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/b72b6b68b115c0c5a7311e937a17bf4ceafe79e3/README.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/2dd7c12fd159553f5f835bf6d8d9949d708199fb/README.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -102,7 +102,7 @@ params {
     output_dir = '/data/results'
 }
 </code></pre>
-<p>The CSV requires <code>sample_name</code> and <code>path</code>. For fractionated cohorts it also requires <code>fraction_id</code>, with one acquisition per sample/fraction pair. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample/fraction pairs and acquisition basenames must be unique. Basenames may contain letters, numbers, dots, underscores, and hyphens. Supply the original <code>.d</code> directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. For fractionated quantitation, the EasyPQP library must contain a <code>fraction_id</code> column. The pipeline prepares a separate library and runs DIA-NN once per fraction. The legacy two-column CSV remains valid with an unannotated library.</p>
+<p>The CSV requires <code>sample_name</code> and <code>path</code>. For fractionated cohorts it also requires <code>fraction_id</code>, with one acquisition per sample/fraction pair. Additional columns are allowed and ignored. Relative paths resolve from the CSV directory. Sample/fraction pairs and acquisition basenames must be unique. Acquisition basenames must start with a letter or digit and may contain spaces, but not tabs or newlines. Supply the original <code>.d</code> directory for dia-PASEF quantitation, even when library generation used a reconstructed mzML. For fractionated quantitation, the EasyPQP library must contain a <code>fraction_id</code> column. The pipeline prepares a separate library and runs DIA-NN once per fraction. The legacy two-column CSV remains valid with an unannotated library.</p>
 <pre><code class="language-csv">sample_name,path
 sample_01,/data/sample_01.mzML
 sample_02,/data/sample_02.d
