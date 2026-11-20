@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-11-20
+
 ### Changed
 
 - Migrate the pipeline license from GPL to BSD 3-Clause and update license documentation; shared code and third-party tools retain their respective licenses.
@@ -77,4 +79,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.2.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.1.0...v1.2.0
 [1.3.0]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.2.0...v1.3.0
 [1.3.1]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.3.0...v1.3.1
-[unreleased]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.3.1...HEAD
+[1.3.2]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.3.1...v1.3.2
+[unreleased]: https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/compare/v1.3.2...HEAD
