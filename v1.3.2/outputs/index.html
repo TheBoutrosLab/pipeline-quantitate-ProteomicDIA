@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Outputs - pipeline-quantitate-ProteomicDIA</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Outputs";
+        var mkdocs_page_input_path = "outputs.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> pipeline-quantitate-ProteomicDIA
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../how-to-run/">How to run</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../parameters/">Parameters</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Outputs</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../testing/">Testing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../references/">References</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">pipeline-quantitate-ProteomicDIA</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Outputs</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/blob/v1.3.2/README.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="outputs">Outputs</h2>
+<p>Final results are published under <code>quantitate-ProteomicDIA-&lt;version&gt;/&lt;dataset_id&gt;/output/DIA-NN/</code>. For a two-column input CSV, DIA-NN quantifies the complete cohort directly. The pipeline publishes its native <code>&lt;dataset_id&gt;-report*</code> files, <code>diann.log</code>, <code>acquisitions.tsv</code>, and <code>output.sha512</code>; it does not run R aggregation. The acquisition table maps each biological sample to its input file.</p>
+<p>For fractionated input, the R aggregation writes <code>&lt;dataset_id&gt;-report.tsv</code> with one row per sample and precursor, <code>.pr_matrix.tsv</code> and <code>.pg_matrix.tsv</code> matrices, modified- and stripped-peptide matrices, fraction coverage, and <code>output.sha512</code>. The pipeline also publishes <code>acquisitions.tsv</code>, which maps each sample and fraction to its input file, and <code>&lt;dataset_id&gt;-&lt;fraction_id&gt;-diann.log</code> for each fraction. Gene-related matrices and fields are not part of the combined output. The report retains native non-gene DIA-NN columns in their original order. It sums <code>Precursor.Quantity</code>, <code>Precursor.Normalised</code>, <code>PG.Quantity</code>, and <code>PG.Normalised</code> across observed fractions and recalculates <code>PG.MaxLFQ</code> with the DIA-NN R package. Other native columns, including scores, RT, fragment metrics, and q-values, come from the lowest-q-value representative fraction and are identified by <code>Representative.Fraction.ID</code> and <code>Uncombined.Fields.Scope</code>. The combined report uses the biological sample name in <code>Run</code>; use <code>acquisitions.tsv</code> to recover the original file names. Native fraction-specific report files remain intermediate Nextflow work files and are not published.</p>
+<p>The default <code>params { 'DIA-NN' { ... } }</code> namespace reproduces FragPipe's q-value thresholds, matrices, profiling, quantification, and report options. For the TSV library, <code>no_prot_inf</code> defaults to <code>true</code>; for a <code>.speclib</code>, it defaults to <code>false</code>. Override individual keys in the run config:</p>
+<pre><code class="language-groovy">params {
+    'DIA-NN' {
+        qvalue = 0.01          // --qvalue 0.01
+        no_prot_inf = false   // omit --no-prot-inf
+        no_ifs_removal = false // omit --no-ifs-removal
+        mass_acc = 10         // --mass-acc 10
+        pg_level = 1          // --pg-level 1
+    }
+}
+</code></pre>
+<p>A <code>true</code> Boolean emits a flag; <code>false</code> omits it. A string or number emits a flag with that value. A list repeats the flag for each value, such as <code>var_mod = ['UniMod:35,15.994915,M', 'UniMod:21,79.966331,STY']</code> inside the namespace. Pipeline-managed file and execution options (<code>lib</code>, <code>fasta</code>, <code>f</code>, <code>dir</code>, <code>out</code>, <code>threads</code>, <code>cfg</code>) cannot be set here. Version-specific options must be supported by the DIA-NN binary in the selected image, and file-valued options must refer to paths visible inside the container. With <code>copy_inputs_to_work = true</code>, Nextflow copies all staged inputs, including <code>.d</code> directories, into the task work directory before DIA-NN runs. The pipeline writes these options, the staged library and FASTA paths, and all acquisitions to the work-directory <code>diann-input/filelist_diann.txt</code>, then invokes DIA-NN with only <code>--cfg diann-input/filelist_diann.txt--</code>. The bundled version may print <code>WARNING: unrecognised option [--]</code> while still loading the runs. For fractionated cohorts, the aggregation uses confident <code>Precursor.Normalised</code> observations, sums repeated precursor quantities across fractions, and applies <code>diann_maxlfq()</code> to sample-level precursor quantities. No additional cross-fraction intensity scaling is applied. The aggregated precursor and protein-group matrices use DIA-NN-compatible <code>.pr_matrix.tsv</code> and <code>.pg_matrix.tsv</code> suffixes and identifier columns, with biological sample names as quantity columns. They are published in <code>output/DIA-NN/</code> and remain custom estimates: the protein values come from the DIA-NN R package, not DIA-NN’s internal QuantUMS or MaxLFQ calculation.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../parameters/" class="btn btn-neutral float-left" title="Parameters"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../testing/" class="btn btn-neutral float-right" title="Testing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/TheBoutrosLab/pipeline-quantitate-ProteomicDIA/tree/v1.3.2" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../parameters/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../testing/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
